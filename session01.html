@@ -1,0 +1,964 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第1回 レーダー基礎理論 | 船舶レーダー教育</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a3a5c;
+    --primary-light: #2a5a8c;
+    --accent: #e8a020;
+    --accent-dark: #c4841a;
+    --bg: #f4f6f9;
+    --card-bg: #ffffff;
+    --text: #2c3e50;
+    --text-light: #566573;
+    --grade3: #2e7d32;
+    --grade3-bg: #e8f5e9;
+    --grade2: #1565c0;
+    --grade2-bg: #e3f2fd;
+    --border: #d1dce8;
+    --shadow: 0 2px 12px rgba(26,58,92,0.10);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans JP', 'Noto Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.7;
+  }
+
+  /* NAV */
+  nav {
+    background: var(--primary);
+    color: #fff;
+    padding: 0 2rem;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  nav .nav-brand {
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  nav .nav-brand svg { flex-shrink: 0; }
+  nav .nav-session {
+    background: var(--accent);
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.25rem 0.9rem;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+  }
+
+  /* HEADER */
+  .page-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+    color: #fff;
+    padding: 3rem 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-header::after {
+    content: '';
+    position: absolute;
+    right: -60px; bottom: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(232,160,32,0.12);
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  .header-meta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 0.8rem;
+    font-size: 0.82rem;
+    opacity: 0.85;
+  }
+  .header-meta span {
+    background: rgba(255,255,255,0.15);
+    padding: 0.2rem 0.7rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .header-meta .accent-tag {
+    background: var(--accent);
+    color: var(--primary);
+    border-color: transparent;
+    font-weight: 700;
+  }
+  .page-header h1 {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 700;
+    line-height: 1.3;
+    margin-bottom: 0.6rem;
+  }
+  .page-header p.subtitle {
+    font-size: 1rem;
+    opacity: 0.85;
+    max-width: 700px;
+  }
+
+  /* MAIN LAYOUT */
+  .main-content {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+  }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .section-title .icon {
+    background: var(--primary);
+    color: #fff;
+    width: 28px; height: 28px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  section.content-section { margin-bottom: 3rem; }
+
+  /* OBJECTIVE CARDS */
+  .objective-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+  @media (max-width: 700px) { .objective-grid { grid-template-columns: 1fr; } }
+  .objective-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 1.4rem 1.6rem;
+    box-shadow: var(--shadow);
+    border-top: 4px solid;
+  }
+  .objective-card.grade3 { border-color: var(--grade3); }
+  .objective-card.grade2 { border-color: var(--grade2); }
+  .objective-card .grade-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 0.18rem 0.7rem;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 0.8rem;
+  }
+  .grade3 .grade-label { background: var(--grade3-bg); color: var(--grade3); }
+  .grade2 .grade-label { background: var(--grade2-bg); color: var(--grade2); }
+  .objective-card p { font-size: 0.93rem; line-height: 1.75; }
+
+  /* CONTENT CARDS */
+  .content-card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 1.8rem 2rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+  .content-card h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 1rem;
+    padding-left: 0.8rem;
+    border-left: 3px solid var(--accent);
+  }
+  .content-card p { margin-bottom: 0.8rem; font-size: 0.93rem; }
+  .content-card p:last-child { margin-bottom: 0; }
+
+  /* COMPARISON TABLE */
+  .table-wrapper { overflow-x: auto; margin: 1rem 0; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  thead tr { background: var(--primary); color: #fff; }
+  thead th {
+    padding: 0.75rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.85rem;
+  }
+  tbody tr:nth-child(even) { background: #f0f4f8; }
+  tbody tr:hover { background: #e8f0f8; }
+  tbody td {
+    padding: 0.7rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tbody td:first-child { font-weight: 600; color: var(--primary); }
+
+  /* SVG FIGURES */
+  .svg-figure {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.5rem;
+  }
+  .svg-figure figcaption {
+    text-align: center;
+    font-size: 0.82rem;
+    color: var(--text-light);
+    margin-top: 0.8rem;
+    font-style: italic;
+  }
+  .svg-figure svg { width: 100%; height: auto; display: block; }
+
+  /* RUBRIC */
+  .rubric-table thead th:first-child { width: 22%; }
+  .rubric-table thead th:not(:first-child) { width: 19.5%; text-align: center; }
+  .rubric-table td:not(:first-child) { text-align: center; font-size: 0.82rem; }
+  .level-4 { background: #fff8e1; }
+  .level-3 { background: #e8f5e9; }
+  .level-2 { background: #e3f2fd; }
+  .level-1 { background: #fce4ec; }
+  .level-badge {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 0.8rem;
+    margin-bottom: 0.3rem;
+  }
+  .b4 { background: #ffd54f; color: #5d4037; }
+  .b3 { background: #81c784; color: #1b5e20; }
+  .b2 { background: #64b5f6; color: #0d47a1; }
+  .b1 { background: #ef9a9a; color: #b71c1c; }
+
+  /* TEST SECTION */
+  .test-section { margin-bottom: 3rem; }
+  .test-question {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 1.5rem 1.8rem;
+    box-shadow: var(--shadow);
+    margin-bottom: 1.2rem;
+    border-left: 4px solid var(--accent);
+  }
+  .test-question .q-header {
+    display: flex;
+    gap: 0.7rem;
+    align-items: flex-start;
+    margin-bottom: 0.8rem;
+  }
+  .q-num {
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.82rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .q-level {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.2rem 0.65rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .q-level.g3 { background: var(--grade3-bg); color: var(--grade3); }
+  .q-level.g2 { background: var(--grade2-bg); color: var(--grade2); }
+  .q-type {
+    font-size: 0.78rem;
+    color: var(--text-light);
+    padding: 0.2rem 0.5rem;
+    background: var(--bg);
+    border-radius: 5px;
+    flex-shrink: 0;
+  }
+  .test-question p { font-size: 0.93rem; margin-bottom: 0.6rem; }
+  .choices { list-style: none; padding-left: 0.5rem; }
+  .choices li {
+    padding: 0.35rem 0.8rem;
+    border-radius: 5px;
+    margin-bottom: 0.25rem;
+    font-size: 0.9rem;
+    background: var(--bg);
+    border: 1px solid var(--border);
+  }
+
+  /* FOOTER */
+  footer {
+    background: var(--primary);
+    color: rgba(255,255,255,0.8);
+    text-align: center;
+    padding: 2rem 1.5rem;
+    font-size: 0.85rem;
+    line-height: 1.8;
+  }
+  footer strong { color: #fff; }
+  footer .next-session {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--primary);
+    font-weight: 700;
+    padding: 0.3rem 1rem;
+    border-radius: 6px;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+  }
+
+  /* INFO BOX */
+  .info-box {
+    background: #e8f0fc;
+    border: 1px solid #b3c8ec;
+    border-radius: 8px;
+    padding: 1rem 1.2rem;
+    margin: 1rem 0;
+    font-size: 0.88rem;
+  }
+  .info-box .info-label {
+    font-weight: 700;
+    color: var(--grade2);
+    margin-bottom: 0.3rem;
+    font-size: 0.82rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .highlight-box {
+    background: #fff8e1;
+    border-left: 4px solid var(--accent);
+    padding: 0.9rem 1.2rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+
+  ul.bullet-list {
+    padding-left: 1.4rem;
+    margin: 0.6rem 0;
+  }
+  ul.bullet-list li {
+    margin-bottom: 0.4rem;
+    font-size: 0.92rem;
+  }
+
+  /* PRINT */
+  @media print {
+    nav { display: none !important; }
+    body { background: #fff; font-size: 12pt; }
+    .page-header { background: var(--primary) !important; -webkit-print-color-adjust: exact; }
+    .content-card, .svg-figure, .test-question { box-shadow: none; border: 1px solid #ccc; }
+    section.content-section { page-break-inside: avoid; }
+    .test-section { page-break-before: always; }
+    footer { page-break-before: always; }
+    @page { margin: 20mm 15mm; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAVIGATION -->
+<nav>
+  <div class="nav-brand">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-label="レーダーアイコン">
+      <circle cx="14" cy="14" r="12" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+      <circle cx="14" cy="14" r="7" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+      <circle cx="14" cy="14" r="2" fill="#e8a020"/>
+      <line x1="14" y1="14" x2="24" y2="6" stroke="#e8a020" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    船舶レーダー教育 | 広島商船高等専門学校
+  </div>
+  <div class="nav-session">第1回 / 全5回</div>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <div class="header-inner">
+    <div class="header-meta">
+      <span class="accent-tag">Module 01</span>
+      <span>2026年4月21日（火）</span>
+      <span>対象：3級・2級航海士候補生</span>
+      <span>広島商船高等専門学校</span>
+    </div>
+    <h1>レーダー基礎理論</h1>
+    <p class="subtitle">電波の伝搬原理からパルス方式の送受信、分解能の定義、そして最新の固体化（半導体）レーダー技術まで、船舶レーダーの根幹をなす理論を体系的に学ぶ。</p>
+  </div>
+</div>
+
+<div class="main-content">
+
+  <!-- 到達目標 -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">目</span>到達目標</h2>
+    <div class="objective-grid">
+      <div class="objective-card grade3">
+        <div class="grade-label">3級航海士候補生</div>
+        <p>レーダーで「何が」「なぜ」見えるかを物理的根拠をもとに説明できる。XバンドとSバンドの主な違いを列挙できる。固体化レーダーとスプリアスの概念を理解し、基本的な説明ができる。</p>
+      </div>
+      <div class="objective-card grade2">
+        <div class="grade-label">2級航海士候補生</div>
+        <p>観測条件（気象・海象）と限界性能を定量的に説明し、運用上の影響を述べられる。スプリアス規制の背景と航海士としてのコンプライアンス責務を具体的に説明できる。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 学習コンテンツ 1: Xバンド・Sバンド比較 -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">１</span>XバンドとSバンドの比較</h2>
+    <div class="content-card">
+      <h3>周波数・波長と用途の違い</h3>
+      <p>船舶用レーダーには主に<strong>Xバンド（9GHz帯）</strong>と<strong>Sバンド（3GHz帯）</strong>の2種類がある。周波数の違いは波長・ビーム幅・降雨減衰特性に直接影響するため、運用目的に応じて使い分けが行われる。</p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>比較項目</th>
+              <th>Xバンド（9 GHz）</th>
+              <th>Sバンド（3 GHz）</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>波長</td><td>約 3 cm</td><td>約 10 cm</td></tr>
+            <tr><td>周波数</td><td>9,300〜9,500 MHz</td><td>2,900〜3,100 MHz</td></tr>
+            <tr><td>方位分解能</td><td>高い（短い波長で鋭いビーム）</td><td>やや低い</td></tr>
+            <tr><td>降雨減衰</td><td>大きい（雨・霧の影響を受けやすい）</td><td>小さい（悪天候でも遠距離映像を維持）</td></tr>
+            <tr><td>海面クラッター</td><td>やや多い</td><td>少ない</td></tr>
+            <tr><td>主な用途</td><td>沿岸航行・港湾・一般的な見張り</td><td>外洋航行・悪天候時の補助</td></tr>
+            <tr><td>アンテナ長</td><td>比較的短くてよい（0.9〜3.6 m）</td><td>長いアンテナが必要（3〜5 m）</td></tr>
+            <tr><td>IMO要件</td><td>300 GT以上の船舶に義務搭載</td><td>10,000 GT以上に追加義務</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SVG: 波長比較図 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 300" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <!-- Background -->
+        <rect width="820" height="300" fill="#f8fafc" rx="8"/>
+        <!-- Title -->
+        <text x="410" y="30" text-anchor="middle" font-size="15" font-weight="700" fill="#1a3a5c">XバンドとSバンド 波長比較図</text>
+
+        <!-- X-band wave (wavelength ~3cm, many cycles) -->
+        <text x="60" y="80" font-size="13" font-weight="700" fill="#1a3a5c">Xバンド（9 GHz / 波長 約3 cm）</text>
+        <!-- Scale bar -->
+        <line x1="60" y1="90" x2="580" y2="90" stroke="#ddd" stroke-width="1"/>
+        <!-- Draw X-band wave - shorter wavelength, more cycles -->
+        <path d="M60,125 
+          Q73,95 86,125 Q99,155 112,125
+          Q125,95 138,125 Q151,155 164,125
+          Q177,95 190,125 Q203,155 216,125
+          Q229,95 242,125 Q255,155 268,125
+          Q281,95 294,125 Q307,155 320,125
+          Q333,95 346,125 Q359,155 372,125
+          Q385,95 398,125 Q411,155 424,125
+          Q437,95 450,125 Q463,155 476,125
+          Q489,95 502,125 Q515,155 528,125
+          Q541,95 554,125 Q567,155 580,125"
+          fill="none" stroke="#1565c0" stroke-width="2.5"/>
+        <!-- Wavelength brace for X-band -->
+        <line x1="60" y1="148" x2="86" y2="148" stroke="#1565c0" stroke-width="1.5"/>
+        <line x1="60" y1="144" x2="60" y2="152" stroke="#1565c0" stroke-width="1.5"/>
+        <line x1="86" y1="144" x2="86" y2="152" stroke="#1565c0" stroke-width="1.5"/>
+        <text x="73" y="162" text-anchor="middle" font-size="11" fill="#1565c0">λ≈3cm</text>
+
+        <!-- S-band wave (wavelength ~10cm, fewer cycles) -->
+        <text x="60" y="195" font-size="13" font-weight="700" fill="#1a3a5c">Sバンド（3 GHz / 波長 約10 cm）</text>
+        <!-- Draw S-band wave - longer wavelength, fewer cycles -->
+        <path d="M60,238
+          Q100,200 140,238 Q180,276 220,238
+          Q260,200 300,238 Q340,276 380,238
+          Q420,200 460,238 Q500,276 540,238
+          Q560,220 580,238"
+          fill="none" stroke="#e8a020" stroke-width="3"/>
+        <!-- Wavelength brace for S-band -->
+        <line x1="60" y1="262" x2="140" y2="262" stroke="#e8a020" stroke-width="1.5"/>
+        <line x1="60" y1="257" x2="60" y2="267" stroke="#e8a020" stroke-width="1.5"/>
+        <line x1="140" y1="257" x2="140" y2="267" stroke="#e8a020" stroke-width="1.5"/>
+        <text x="100" y="278" text-anchor="middle" font-size="11" fill="#c4841a">λ≈10cm</text>
+
+        <!-- Legend box -->
+        <rect x="620" y="80" width="180" height="130" rx="8" fill="white" stroke="#d1dce8" stroke-width="1"/>
+        <text x="710" y="100" text-anchor="middle" font-size="12" font-weight="700" fill="#1a3a5c">凡例・特性比較</text>
+        <line x1="635" y1="115" x2="670" y2="115" stroke="#1565c0" stroke-width="2.5"/>
+        <text x="680" y="119" font-size="11" fill="#333">Xバンド（9 GHz）</text>
+        <line x1="635" y1="133" x2="670" y2="133" stroke="#e8a020" stroke-width="3"/>
+        <text x="680" y="137" font-size="11" fill="#333">Sバンド（3 GHz）</text>
+        <text x="635" y="158" font-size="10" fill="#555">Xバンド：高分解能</text>
+        <text x="635" y="172" font-size="10" fill="#555">　　降雨減衰が大</text>
+        <text x="635" y="188" font-size="10" fill="#555">Sバンド：降雨に強い</text>
+        <text x="635" y="202" font-size="10" fill="#555">　　分解能はやや低</text>
+
+        <!-- Scale indicator -->
+        <text x="60" y="293" font-size="10" fill="#999">※ 図の縮尺は概念的表示（実際の波長は km/m スケール）</text>
+      </svg>
+      <figcaption>図1-1　XバンドとSバンドの波長比較（概念図）。Xバンドの波長はSバンドの約1/3であり、より鋭いビームを形成できる一方、降雨による減衰を受けやすい。</figcaption>
+    </figure>
+  </section>
+
+  <!-- 学習コンテンツ 2: パルス方式の送受信原理 -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">２</span>電波の送受信原理（パルス方式）</h2>
+    <div class="content-card">
+      <h3>パルスレーダーの動作原理</h3>
+      <p>船舶レーダーは、短時間の電波パルスを間欠的に送信し、物標からの反射エコーを受信することで距離・方位を測定する。距離は電波の伝搬速度（光速 c ≈ 3×10⁸ m/s）と往復時間から算出する。</p>
+      <div class="highlight-box">
+        <strong>距離算出式：</strong>　D = (c × t) / 2<br>
+        　D：物標までの距離、c：光速（約 3×10⁸ m/s）、t：送受信間の遅延時間
+      </div>
+      <p>1マイル（1852 m）の往復に要する時間は約12.35マイクロ秒。レーダーは1回の送信パルスにつき1点分の距離情報を、アンテナ回転によって360°の方位情報を収集する。</p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>パラメータ</th><th>定義・典型値</th><th>影響</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>パルス幅（PW）</td><td>50 ns〜1,000 ns</td><td>距離分解能と最小探知距離に影響</td></tr>
+            <tr><td>繰り返し周波数（PRF）</td><td>500〜3,000 Hz</td><td>最大探知距離（セカンドトレース発生）に影響</td></tr>
+            <tr><td>ピーク出力</td><td>2〜25 kW（マグネトロン）</td><td>探知距離・SN比に影響</td></tr>
+            <tr><td>パルス圧縮比</td><td>数十〜数百（固体化）</td><td>低ピーク出力で高距離分解能を実現</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SVG: 送受信タイミング図 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 360" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="360" fill="#f8fafc" rx="8"/>
+        <text x="410" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#1a3a5c">パルスレーダーの送受信タイミング図</text>
+
+        <!-- Time axis -->
+        <line x1="60" y1="310" x2="760" y2="310" stroke="#1a3a5c" stroke-width="2"/>
+        <text x="780" y="315" font-size="12" fill="#1a3a5c">時間</text>
+        <!-- Tick marks -->
+        <line x1="60" y1="305" x2="60" y2="315" stroke="#1a3a5c" stroke-width="1.5"/>
+        <line x1="200" y1="305" x2="200" y2="315" stroke="#999" stroke-width="1"/>
+        <line x1="340" y1="305" x2="340" y2="315" stroke="#999" stroke-width="1"/>
+        <line x1="480" y1="305" x2="480" y2="315" stroke="#999" stroke-width="1"/>
+        <line x1="620" y1="305" x2="620" y2="315" stroke="#999" stroke-width="1"/>
+        <line x1="760" y1="305" x2="760" y2="315" stroke="#1a3a5c" stroke-width="1.5"/>
+
+        <!-- TX Label -->
+        <text x="30" y="95" font-size="12" font-weight="700" fill="#1a3a5c" text-anchor="middle">送信</text>
+        <text x="30" y="110" font-size="10" fill="#555" text-anchor="middle">(TX)</text>
+        <!-- TX Pulse 1 -->
+        <rect x="60" y="65" width="28" height="55" fill="#1565c0" rx="2"/>
+        <text x="74" y="58" text-anchor="middle" font-size="10" fill="#1565c0">パルス1</text>
+        <!-- TX Pulse 2 -->
+        <rect x="480" y="65" width="28" height="55" fill="#1565c0" rx="2"/>
+        <text x="494" y="58" text-anchor="middle" font-size="10" fill="#1565c0">パルス2</text>
+        <!-- TX baseline -->
+        <line x1="60" y1="120" x2="760" y2="120" stroke="#1a3a5c" stroke-width="1.5"/>
+
+        <!-- RX Label -->
+        <text x="30" y="215" font-size="12" font-weight="700" fill="#1a3a5c" text-anchor="middle">受信</text>
+        <text x="30" y="230" font-size="10" fill="#555" text-anchor="middle">(RX)</text>
+        <!-- RX Echo 1 (near target) -->
+        <rect x="175" y="180" width="18" height="55" fill="#2e7d32" rx="2" opacity="0.85"/>
+        <text x="184" y="173" text-anchor="middle" font-size="10" fill="#2e7d32">近方</text>
+        <text x="184" y="183" text-anchor="middle" font-size="9" fill="#2e7d32">エコー</text>
+        <!-- RX Echo 2 (far target) -->
+        <rect x="330" y="180" width="18" height="55" fill="#e8a020" rx="2" opacity="0.85"/>
+        <text x="339" y="173" text-anchor="middle" font-size="10" fill="#c4841a">遠方</text>
+        <text x="339" y="183" text-anchor="middle" font-size="9" fill="#c4841a">エコー</text>
+        <!-- RX baseline -->
+        <line x1="60" y1="235" x2="760" y2="235" stroke="#1a3a5c" stroke-width="1.5"/>
+
+        <!-- Delay time annotation for near echo -->
+        <line x1="74" y1="270" x2="184" y2="270" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <line x1="74" y1="265" x2="74" y2="275" stroke="#2e7d32" stroke-width="1.5"/>
+        <line x1="184" y1="265" x2="184" y2="275" stroke="#2e7d32" stroke-width="1.5"/>
+        <text x="129" y="286" text-anchor="middle" font-size="11" fill="#2e7d32">遅延時間 t₁</text>
+        <text x="129" y="299" text-anchor="middle" font-size="10" fill="#2e7d32">→ 近方距離 D₁</text>
+
+        <!-- Delay time annotation for far echo -->
+        <line x1="74" y1="270" x2="74" y2="270"/>
+        <line x1="74" y1="253" x2="339" y2="253" stroke="#e8a020" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <line x1="74" y1="248" x2="74" y2="258" stroke="#e8a020" stroke-width="1.5"/>
+        <line x1="339" y1="248" x2="339" y2="258" stroke="#e8a020" stroke-width="1.5"/>
+        <text x="207" y="246" text-anchor="middle" font-size="11" fill="#c4841a">遅延時間 t₂（> t₁）</text>
+
+        <!-- Pulse width annotation -->
+        <line x1="60" y1="140" x2="88" y2="140" stroke="#1565c0" stroke-width="1.5"/>
+        <line x1="60" y1="136" x2="60" y2="144" stroke="#1565c0" stroke-width="1.5"/>
+        <line x1="88" y1="136" x2="88" y2="144" stroke="#1565c0" stroke-width="1.5"/>
+        <text x="74" y="154" text-anchor="middle" font-size="10" fill="#1565c0">パルス幅 τ</text>
+
+        <!-- PRF annotation -->
+        <line x1="74" y1="330" x2="494" y2="330" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <line x1="74" y1="325" x2="74" y2="335" stroke="#1565c0" stroke-width="1.5"/>
+        <line x1="494" y1="325" x2="494" y2="335" stroke="#1565c0" stroke-width="1.5"/>
+        <text x="284" y="348" text-anchor="middle" font-size="11" fill="#1565c0">パルス繰り返し周期 PRI（= 1/PRF）</text>
+
+        <!-- Distance formula -->
+        <rect x="595" y="160" width="185" height="65" rx="8" fill="white" stroke="#d1dce8"/>
+        <text x="687" y="180" text-anchor="middle" font-size="12" font-weight="700" fill="#1a3a5c">距離算出式</text>
+        <text x="687" y="200" text-anchor="middle" font-size="14" fill="#1565c0">D = c × t / 2</text>
+        <text x="687" y="217" text-anchor="middle" font-size="10" fill="#555">c ≈ 3×10⁸ m/s（光速）</text>
+      </svg>
+      <figcaption>図1-2　パルスレーダーの送受信タイミング図。送信パルスから反射エコーまでの遅延時間 t に光速 c を乗じて2で割ることで物標距離 D を算出する。</figcaption>
+    </figure>
+  </section>
+
+  <!-- 学習コンテンツ 3: 分解能 -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">３</span>距離分解能・方位分解能</h2>
+    <div class="content-card">
+      <h3>分解能の定義と向上要因</h3>
+      <p><strong>距離分解能</strong>とは、同一方位上に並んだ2物標を識別できる最小距離差を指す。これはパルス幅 τ に依存し、次式で表される。</p>
+      <div class="highlight-box">
+        距離分解能 δR = c × τ / 2　（τ：パルス幅）<br>
+        <em>例：τ = 50 ns → δR ≈ 7.5 m　（τ が短いほど分解能が高い）</em>
+      </div>
+      <p><strong>方位分解能</strong>とは、同一距離上に並んだ2物標を識別できる最小方位差を指す。アンテナのビーム幅 θ に依存する。</p>
+      <div class="highlight-box">
+        方位分解能 ≈ ビーム幅 θ<br>
+        <em>ビーム幅は λ/L に比例（λ：波長、L：アンテナ長）。アンテナを長くするか、波長を短くすると方位分解能が向上する。</em>
+      </div>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>分解能の種類</th><th>支配パラメータ</th><th>向上させる方法</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>距離分解能</td><td>パルス幅 τ</td><td>パルス幅を短縮する（固体化レーダーではパルス圧縮を活用）</td></tr>
+            <tr><td>方位分解能</td><td>ビーム幅 θ</td><td>アンテナを長くする / Xバンドを使用（波長を短縮）</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SVG: ビーム幅と方位分解能 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 320" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="320" fill="#f8fafc" rx="8"/>
+        <text x="410" y="28" text-anchor="middle" font-size="15" font-weight="700" fill="#1a3a5c">ビーム幅と方位分解能の概念図</text>
+
+        <!-- Left panel: Wide beam (cannot resolve) -->
+        <text x="200" y="58" text-anchor="middle" font-size="13" font-weight="700" fill="#c62828">幅広ビーム（分解不可）</text>
+        <!-- Antenna -->
+        <rect x="185" y="68" width="30" height="16" rx="3" fill="#1a3a5c"/>
+        <text x="200" y="78" text-anchor="middle" font-size="9" fill="white">アンテナ</text>
+        <!-- Wide beam cone -->
+        <path d="M200,84 L110,230 L290,230 Z" fill="rgba(21,101,192,0.12)" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <!-- Beam width angle arc -->
+        <path d="M200,84 Q200,140 160,175" fill="none" stroke="#1565c0" stroke-width="1.5"/>
+        <text x="148" y="162" font-size="10" fill="#1565c0">θ₁</text>
+        <text x="148" y="174" font-size="10" fill="#1565c0">（大）</text>
+        <!-- Two targets merged -->
+        <circle cx="175" cy="210" r="12" fill="#e8a020" opacity="0.7"/>
+        <circle cx="210" cy="210" r="12" fill="#e8a020" opacity="0.7"/>
+        <text x="193" y="215" text-anchor="middle" font-size="10" fill="#5d4037" font-weight="700">合併</text>
+        <text x="175" y="250" text-anchor="middle" font-size="10" fill="#c62828">物標A</text>
+        <text x="213" y="250" text-anchor="middle" font-size="10" fill="#c62828">物標B</text>
+        <text x="193" y="268" text-anchor="middle" font-size="11" fill="#c62828">→ 画面上で1点に見える</text>
+
+        <!-- Divider -->
+        <line x1="410" y1="50" x2="410" y2="300" stroke="#d1dce8" stroke-width="1.5" stroke-dasharray="6,3"/>
+
+        <!-- Right panel: Narrow beam (can resolve) -->
+        <text x="610" y="58" text-anchor="middle" font-size="13" font-weight="700" fill="#2e7d32">狭ビーム（分解可能）</text>
+        <!-- Antenna -->
+        <rect x="595" y="68" width="30" height="16" rx="3" fill="#1a3a5c"/>
+        <text x="610" y="78" text-anchor="middle" font-size="9" fill="white">アンテナ</text>
+        <!-- Narrow beam cone -->
+        <path d="M610,84 L560,230 L660,230 Z" fill="rgba(46,125,50,0.12)" stroke="#2e7d32" stroke-width="1.5"/>
+        <!-- Beam width angle arc -->
+        <path d="M610,84 Q610,130 590,155" fill="none" stroke="#2e7d32" stroke-width="1.5"/>
+        <text x="578" y="152" font-size="10" fill="#2e7d32">θ₂</text>
+        <text x="575" y="164" font-size="10" fill="#2e7d32">（小）</text>
+        <!-- Two targets separated -->
+        <circle cx="580" cy="210" r="10" fill="#2e7d32" opacity="0.8"/>
+        <circle cx="640" cy="210" r="10" fill="#2e7d32" opacity="0.8"/>
+        <text x="580" y="214" text-anchor="middle" font-size="9" fill="white">A</text>
+        <text x="640" y="214" text-anchor="middle" font-size="9" fill="white">B</text>
+        <text x="580" y="250" text-anchor="middle" font-size="10" fill="#2e7d32">物標A</text>
+        <text x="640" y="250" text-anchor="middle" font-size="10" fill="#2e7d32">物標B</text>
+        <text x="610" y="268" text-anchor="middle" font-size="11" fill="#2e7d32">→ 2点として分離表示</text>
+
+        <!-- Bottom note -->
+        <text x="410" y="295" text-anchor="middle" font-size="11" fill="#555">ビーム幅は波長λに比例し、アンテナ長Lに反比例する（θ ∝ λ/L）。Xバンドほど短波長のため、同じアンテナ長でSバンドより細いビームを形成できる。</text>
+      </svg>
+      <figcaption>図1-3　ビーム幅と方位分解能の概念図。ビーム幅が広い場合（左）は近接する2物標が1点に見えるが、ビーム幅を絞ること（右）で2点として識別できる。</figcaption>
+    </figure>
+  </section>
+
+  <!-- 学習コンテンツ 4: 伝搬影響 -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">４</span>大気屈折・降雨による伝搬影響</h2>
+    <div class="content-card">
+      <h3>大気による電波の屈折</h3>
+      <p>標準大気では電波が地面方向に緩やかに屈折するため、電波の幾何学的な到達距離（水平線距離）よりも実際の探知距離が約15〜20%延長される（標準屈折）。逆に、温度逆転層が形成されると異常屈折（スーパーリフラクション・ダクト）が起こり、通常の水平線を超えた遠距離に異常エコーが現れることがある。</p>
+      <ul class="bullet-list">
+        <li><strong>標準屈折：</strong> 実効地球半径係数 k ≈ 4/3 を用いてレーダー水平線を計算（k = 1 より延長）</li>
+        <li><strong>スーパーリフラクション：</strong> 海面付近の温度逆転・水蒸気減少で発生。ダクトにより超遠距離伝搬</li>
+        <li><strong>サブリフラクション：</strong> 逆に電波が上方に曲がり、探知距離が短縮</li>
+      </ul>
+    </div>
+    <div class="content-card">
+      <h3>降雨・霧・雪による減衰と散乱</h3>
+      <p>雨粒は電波を吸収・散乱させ、遠距離物標の探知を妨げる。減衰の大きさは周波数（波長）に依存し、Xバンドほど影響が大きい。</p>
+      <ul class="bullet-list">
+        <li><strong>降雨クラッター：</strong> 雨域から帰ってくるエコーが画面上のノイズとなる（FTCで軽減）</li>
+        <li><strong>降雨減衰：</strong> 遠距離物標の映像が弱まる（Sバンドは影響が少ない）</li>
+        <li><strong>海面クラッター：</strong> 波頭からの反射エコーが自船周囲に現れる（STCで軽減）</li>
+      </ul>
+      <div class="info-box">
+        <div class="info-label">2級：定量的理解</div>
+        Xバンド（9 GHz）の降雨減衰は雨量10 mm/hで約0.03 dB/km程度、Sバンド（3 GHz）は約0.01 dB/km未満。強雨（50 mm/h以上）では2〜3 dB/kmにもなり、20 nm以上の遠距離物標の映像は著しく劣化する。悪天候海域ではSバンドレーダーへの切り替えを検討すること。
+      </div>
+    </div>
+  </section>
+
+  <!-- 学習コンテンツ 5: 固体化レーダーとスプリアス -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">５</span>固体化（半導体）レーダーとスプリアス</h2>
+    <div class="content-card">
+      <h3>固体化レーダーとマグネトロンレーダーの比較</h3>
+      <p>従来のマグネトロン（磁電管）方式に替わり、<strong>半導体パワーアンプ（SSPA）</strong>を送信源に用いる固体化レーダーが急速に普及している。ピーク出力は低いが、パルス圧縮技術と組み合わせることで同等以上の探知性能を実現する。</p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>比較項目</th><th>マグネトロンレーダー</th><th>固体化（半導体）レーダー</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>送信ピーク出力</td><td>2〜25 kW（高出力）</td><td>数十〜数百 W（低出力）</td></tr>
+            <tr><td>パルス圧縮</td><td>不使用（単純パルス）</td><td>使用（FMCW・LFM等）</td></tr>
+            <tr><td>起動時間</td><td>3〜4分（ウォームアップ必要）</td><td>ほぼ即時（数秒）</td></tr>
+            <tr><td>部品寿命</td><td>3,000〜5,000時間（要交換）</td><td>数万時間以上（長寿命）</td></tr>
+            <tr><td>メンテナンス</td><td>高電圧部品の定期交換が必要</td><td>低保守（危険な高電圧なし）</td></tr>
+            <tr><td>スプリアス発射</td><td>やや多い傾向</td><td>フィルタ設計で大幅に低減可能</td></tr>
+            <tr><td>距離分解能</td><td>パルス幅に制限される</td><td>パルス圧縮により短距離でも高分解能</td></tr>
+            <tr><td>コスト</td><td>初期費用は低め</td><td>初期費用は高いが維持費は低い</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="content-card">
+      <h3>スプリアス・不要発射の概念</h3>
+      <p><strong>スプリアス発射</strong>とは、送信電波の主搬送波周波数から外れた周波数に存在する不要な電波成分（高調波・側波帯・相互変調積など）のことを指す。国際電気通信連合（ITU）の無線通信規則および日本の電波法は、スプリアスを一定レベル以下に抑制することを義務付けている。</p>
+      <ul class="bullet-list">
+        <li><strong>高調波：</strong> 基本周波数の整数倍の周波数に現れる不要成分</li>
+        <li><strong>近傍スプリアス：</strong> 主波から近傍にある不要成分（帯域外発射）</li>
+        <li><strong>影響：</strong> 他船レーダー・航行援助施設・AIS・VHF無線への干渉</li>
+        <li><strong>航海士の義務：</strong> 法定検査合格品の使用、無断改造禁止、異常発射発見時の報告</li>
+      </ul>
+      <div class="info-box">
+        <div class="info-label">2級：コンプライアンスと法的背景</div>
+        電波法第28条は送信電波の質（周波数・帯域幅・スプリアスの強度）を規定しており、船舶局もこれに準拠する義務がある。スプリアス規制が強化された背景には、AISや電子海図等の航行支援機器との電磁両立性（EMC）確保がある。乗船中に送信機の異常（スプリアス増加・出力変動）を発見した場合、運航停止または機関担当への速報が求められる。
+      </div>
+    </div>
+  </section>
+
+  <!-- ルーブリック -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">評</span>ルーブリック（評価基準）</h2>
+    <div class="table-wrapper">
+      <table class="rubric-table">
+        <thead>
+          <tr>
+            <th>評価観点</th>
+            <th><span class="level-badge b4">4 優秀</span></th>
+            <th><span class="level-badge b3">3 良</span></th>
+            <th><span class="level-badge b2">2 可</span></th>
+            <th><span class="level-badge b1">1 不可</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>XバンドとSバンドの特徴比較</td>
+            <td class="level-4">波長・周波数・用途・雨影響を全て正確に比較できる</td>
+            <td class="level-3">3つ以上正確に述べられる</td>
+            <td class="level-2">2つ正確に述べられる</td>
+            <td class="level-1">1つ以下または誤り</td>
+          </tr>
+          <tr>
+            <td>パルスレーダー動作原理</td>
+            <td class="level-4">送受信から距離・方位決定までの全プロセスを説明できる</td>
+            <td class="level-3">距離決定プロセスを正確に説明できる</td>
+            <td class="level-2">概念的説明にとどまる</td>
+            <td class="level-1">説明できない</td>
+          </tr>
+          <tr>
+            <td>分解能の定義と向上要因</td>
+            <td class="level-4">距離・方位両方の定義と向上要因（パルス幅・ビーム幅）を正確に述べられる</td>
+            <td class="level-3">どちらか一方を完全に説明できる</td>
+            <td class="level-2">どちらか一方を部分的に説明できる</td>
+            <td class="level-1">説明できない</td>
+          </tr>
+          <tr>
+            <td>固体化レーダーの理解</td>
+            <td class="level-4">マグネトロンとの違いを複数観点で比較し、航海上のメリットを述べられる</td>
+            <td class="level-3">基本的な違いと航海上のメリットを述べられる</td>
+            <td class="level-2">固体化の概念は理解している</td>
+            <td class="level-1">理解が不十分</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 確認テスト -->
+  <section class="content-section test-section">
+    <h2 class="section-title"><span class="icon">問</span>確認テスト</h2>
+    <p style="margin-bottom:1.2rem; font-size:0.9rem; color:var(--text-light);">※ 解答欄には記入不要です。口頭または記述で回答してください。</p>
+
+    <div class="test-question">
+      <div class="q-header">
+        <span class="q-num">問題 1</span>
+        <span class="q-level g3">3級</span>
+        <span class="q-type">択一式</span>
+      </div>
+      <p>船舶用Xバンドレーダーの波長として最も適切なものはどれか。</p>
+      <ul class="choices">
+        <li>ア．約 0.3 cm</li>
+        <li>イ．約 3 cm</li>
+        <li>ウ．約 10 cm</li>
+        <li>エ．約 30 cm</li>
+      </ul>
+    </div>
+
+    <div class="test-question">
+      <div class="q-header">
+        <span class="q-num">問題 2</span>
+        <span class="q-level g3">3級</span>
+        <span class="q-type">記述式</span>
+      </div>
+      <p>レーダーの距離分解能とは何か説明し、それを向上させるために変更すべきパラメータを1つ答えなさい。</p>
+    </div>
+
+    <div class="test-question">
+      <div class="q-header">
+        <span class="q-num">問題 3</span>
+        <span class="q-level g2">2級</span>
+        <span class="q-type">記述式</span>
+      </div>
+      <p>近年普及している固体化（半導体）レーダーについて、従来のマグネトロンレーダーと比較した航海上の利点を2つ挙げて説明しなさい。</p>
+    </div>
+
+    <div class="test-question">
+      <div class="q-header">
+        <span class="q-num">問題 4</span>
+        <span class="q-level g2">2級</span>
+        <span class="q-type">記述式</span>
+      </div>
+      <p>レーダーにおける「スプリアス」とは何か説明し、その抑制が重要である理由を述べなさい。</p>
+    </div>
+  </section>
+
+</div><!-- end main-content -->
+
+<footer>
+  <strong>広島商船高等専門学校</strong>　船舶レーダー教育課程<br>
+  第1回 / 全5回　|　2026年4月21日（火）<br>
+  <span class="next-session">次回（第2回）：2026年4月28日（火）— 装置構成と表示方式</span>
+</footer>
+
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  var scrollRaf=0;
+  function emitScroll(){
+    scrollRaf=0;
+    var x=window.scrollX||window.pageXOffset||0;
+    var y=window.scrollY||window.pageYOffset||0;
+    window.parent.postMessage({type:'INLINE_EDIT_SCROLL',scrollX:x,scrollY:y},'*');
+  }
+  window.addEventListener('scroll',function(){
+    if(scrollRaf)return;
+    scrollRaf=requestAnimationFrame(emitScroll);
+  },{passive:true,capture:true});
+  emitScroll();
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>

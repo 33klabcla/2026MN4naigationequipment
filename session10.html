@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第10回 演習・シミュレーション②（多船会合・総合演習） | 船舶レーダー教育</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a3a5c; --primary-dark: #0f2340; --primary-light: #2a5080;
+    --accent: #e8a020; --accent-light: #f5c060;
+    --bg: #f4f6f9; --card-bg: #ffffff; --text: #2c3e50; --text-muted: #5a6a7a;
+    --grade3: #2e7d32; --grade3-bg: #e8f5e9; --grade2: #1565c0; --grade2-bg: #e3f2fd;
+    --border: #d0dae6; --shadow: 0 2px 12px rgba(26,58,92,0.10);
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Noto Sans JP','Noto Sans',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; font-size:15px; }
+  nav { background:var(--primary-dark); padding:0 2rem; display:flex; align-items:center; justify-content:space-between; height:56px; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.3); }
+  nav .nav-brand { color:#fff; font-weight:700; font-size:0.95rem; letter-spacing:0.03em; display:flex; align-items:center; gap:0.7rem; }
+  nav .nav-brand svg { width:28px; height:28px; }
+  nav .nav-session { background:var(--accent); color:var(--primary-dark); font-weight:700; font-size:0.85rem; padding:0.3rem 1rem; border-radius:20px; }
+  nav .nav-links { display:flex; gap:1.5rem; list-style:none; }
+  nav .nav-links a { color:rgba(255,255,255,0.75); text-decoration:none; font-size:0.85rem; }
+  nav .nav-links a:hover { color:var(--accent-light); }
+  .page-header { background:linear-gradient(135deg,#1a2040 0%,var(--primary-dark) 50%,#050f1a 100%); color:#fff; padding:3.5rem 2rem 3rem; position:relative; overflow:hidden; }
+  .page-header::before { content:''; position:absolute; right:-80px; top:-80px; width:400px; height:400px; border-radius:50%; background:rgba(232,160,32,0.06); }
+  .page-header::after { content:''; position:absolute; left:40px; bottom:-100px; width:350px; height:350px; border-radius:50%; background:rgba(255,255,255,0.03); }
+  .header-inner { max-width:1100px; margin:0 auto; position:relative; z-index:1; }
+  .header-meta { display:flex; flex-wrap:wrap; gap:0.5rem 1.2rem; margin-bottom:1.2rem; align-items:center; }
+  .badge { display:inline-block; padding:0.2rem 0.85rem; border-radius:20px; font-size:0.78rem; font-weight:700; letter-spacing:0.06em; }
+  .badge-session { background:var(--accent); color:var(--primary-dark); }
+  .badge-final { background:#c62828; color:#fff; letter-spacing:0.08em; }
+  .badge-date { background:rgba(255,255,255,0.15); color:rgba(255,255,255,0.9); }
+  .badge-module { background:rgba(255,255,255,0.10); color:rgba(255,255,255,0.75); border:1px solid rgba(255,255,255,0.2); }
+  .page-header h1 { font-size:clamp(1.6rem,3.5vw,2.4rem); font-weight:900; line-height:1.3; margin-bottom:0.8rem; }
+  .page-header .subtitle { font-size:1rem; color:rgba(255,255,255,0.75); max-width:700px; }
+  main { max-width:1100px; margin:0 auto; padding:2.5rem 2rem 4rem; }
+  .section { margin-bottom:3rem; }
+  .section-title { font-size:1.25rem; font-weight:700; color:var(--primary); padding-bottom:0.6rem; border-bottom:3px solid var(--accent); margin-bottom:1.5rem; display:flex; align-items:center; gap:0.6rem; }
+  .section-title .icon { width:32px; height:32px; background:var(--primary); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .section-title .icon svg { width:18px; height:18px; fill:#fff; }
+  .objective-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+  @media(max-width:700px){.objective-grid{grid-template-columns:1fr;}}
+  .objective-card { padding:1.4rem 1.6rem; border-radius:10px; border-left:5px solid; box-shadow:var(--shadow); }
+  .objective-card.grade3{background:var(--grade3-bg);border-color:var(--grade3);}
+  .objective-card.grade2{background:var(--grade2-bg);border-color:var(--grade2);}
+  .objective-card .grade-label{font-size:0.78rem;font-weight:700;letter-spacing:0.08em;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.4rem;}
+  .objective-card.grade3 .grade-label{color:var(--grade3);}
+  .objective-card.grade2 .grade-label{color:var(--grade2);}
+  .objective-card p{font-size:0.95rem;line-height:1.65;}
+  .card{background:var(--card-bg);border-radius:10px;box-shadow:var(--shadow);padding:1.8rem 2rem;margin-bottom:1.5rem;}
+  .card h3{font-size:1.05rem;font-weight:700;color:var(--primary);margin-bottom:0.8rem;padding-bottom:0.4rem;border-bottom:2px solid var(--bg);display:flex;align-items:center;gap:0.5rem;}
+  .card h3::before{content:'';display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%;}
+  .card ul,.card ol{padding-left:1.4rem;margin-top:0.5rem;}
+  .card li{margin-bottom:0.4rem;font-size:0.93rem;}
+  .card p{font-size:0.93rem;margin-bottom:0.6rem;}
+  .info-box{background:linear-gradient(135deg,#e8f0fb,#d8e8fb);border-left:4px solid var(--primary-light);padding:1rem 1.3rem;border-radius:0 8px 8px 0;margin:1rem 0;font-size:0.9rem;}
+  .warn-box{background:#fff8e1;border-left:4px solid var(--accent);padding:1rem 1.3rem;border-radius:0 8px 8px 0;margin:1rem 0;font-size:0.9rem;}
+  .svg-figure{background:var(--card-bg);border-radius:10px;box-shadow:var(--shadow);padding:1.5rem;margin-bottom:1.5rem;}
+  .svg-figure figcaption{text-align:center;font-size:0.83rem;color:var(--text-muted);margin-top:0.8rem;font-weight:500;}
+  .svg-figure svg{width:100%;height:auto;display:block;}
+  .rubric-wrap{overflow-x:auto;}
+  .rubric-table{width:100%;border-collapse:collapse;font-size:0.85rem;background:var(--card-bg);border-radius:10px;overflow:hidden;box-shadow:var(--shadow);}
+  .rubric-table thead tr{background:var(--primary);color:#fff;}
+  .rubric-table thead th{padding:0.9rem 1rem;text-align:center;font-weight:700;}
+  .rubric-table thead th:first-child{text-align:left;}
+  .rubric-table tbody tr:nth-child(even){background:#f8fafc;}
+  .rubric-table tbody td{padding:0.85rem 1rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.55;}
+  .rubric-table tbody td:first-child{font-weight:700;color:var(--primary);min-width:130px;}
+  .score-4{background:#e8f5e9!important;}.score-3{background:#e3f2fd!important;}.score-2{background:#fff8e1!important;}.score-1{background:#fce4ec!important;}
+  .score-badge{display:inline-block;width:28px;height:28px;line-height:28px;border-radius:50%;text-align:center;font-weight:700;font-size:0.9rem;margin-bottom:0.3rem;}
+  .badge-4{background:#2e7d32;color:#fff;}.badge-3{background:#1565c0;color:#fff;}.badge-2{background:#f57f17;color:#fff;}.badge-1{background:#c62828;color:#fff;}
+  .quiz-item{background:var(--card-bg);border-radius:10px;box-shadow:var(--shadow);padding:1.6rem 2rem;margin-bottom:1.2rem;border-top:4px solid var(--primary);}
+  .quiz-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:0.8rem;}
+  .quiz-num{background:var(--primary);color:#fff;font-weight:700;font-size:0.85rem;padding:0.3rem 0.8rem;border-radius:6px;flex-shrink:0;white-space:nowrap;}
+  .quiz-grade{font-size:0.78rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:12px;flex-shrink:0;}
+  .quiz-grade.g3{background:var(--grade3-bg);color:var(--grade3);}.quiz-grade.g2{background:var(--grade2-bg);color:var(--grade2);}
+  .quiz-type{font-size:0.78rem;color:var(--text-muted);font-weight:600;padding:0.2rem 0.6rem;border:1px solid var(--border);border-radius:12px;flex-shrink:0;}
+  .quiz-question{font-size:0.95rem;font-weight:600;margin-bottom:1rem;line-height:1.65;}
+  .quiz-choices{list-style:none;display:flex;flex-direction:column;gap:0.5rem;}
+  .quiz-choices li{background:#f8fafc;border:1px solid var(--border);border-radius:7px;padding:0.65rem 1rem;font-size:0.9rem;}
+  .quiz-essay{background:#f8fafc;border:1.5px dashed var(--border);border-radius:7px;padding:1rem;min-height:80px;font-size:0.88rem;color:var(--text-muted);font-style:italic;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+  @media(max-width:700px){.two-col{grid-template-columns:1fr;}}
+  .completion-box { background:linear-gradient(135deg,#1a3a5c,#0a1828); color:#fff; border-radius:12px; padding:2rem; text-align:center; margin-bottom:2rem; }
+  .completion-box h3 { font-size:1.3rem; font-weight:900; color:var(--accent); margin-bottom:0.8rem; }
+  .completion-box p { font-size:0.95rem; color:rgba(255,255,255,0.85); line-height:1.7; }
+  footer{background:var(--primary-dark);color:rgba(255,255,255,0.75);text-align:center;padding:2rem;font-size:0.83rem;line-height:1.8;}
+  footer strong{color:#fff;}
+  footer .final-badge{display:inline-block;margin-top:0.8rem;background:#c62828;color:#fff;font-weight:700;padding:0.6rem 2rem;border-radius:20px;font-size:0.95rem;}
+  @media print{nav{display:none!important;}body{background:#fff;font-size:12pt;}.page-header{background:var(--primary)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.card,.svg-figure,.quiz-item{box-shadow:none;border:1px solid #ddd;}.section{page-break-inside:avoid;}.quiz-item{page-break-inside:avoid;}.rubric-table{page-break-inside:avoid;}footer{page-break-before:always;}@page{margin:20mm;}}
+  @media(max-width:768px){nav{padding:0 1rem;}main{padding:1.5rem 1rem 3rem;}.card{padding:1.2rem;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" stroke="#e8a020" stroke-width="2"/>
+      <circle cx="14" cy="14" r="8" stroke="rgba(255,255,255,0.5)" stroke-width="1" stroke-dasharray="2 2"/>
+      <circle cx="14" cy="14" r="3" fill="#e8a020"/>
+      <line x1="14" y1="14" x2="22" y2="6" stroke="#e8a020" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="14" y1="1" x2="14" y2="4" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="14" y1="24" x2="14" y2="27" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="1" y1="14" x2="4" y2="14" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="24" y1="14" x2="27" y2="14" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    船舶レーダー教育 | 広島商船高等専門学校
+  </div>
+  <ul class="nav-links">
+    <li><a href="#objectives">到達目標</a></li>
+    <li><a href="#content">学習内容</a></li>
+    <li><a href="#rubric">ルーブリック</a></li>
+    <li><a href="#quiz">確認テスト</a></li>
+  </ul>
+  <span class="nav-session">第10回</span>
+</nav>
+
+<header class="page-header">
+  <div class="header-inner">
+    <div class="header-meta">
+      <span class="badge badge-session">第10回 / 全10回</span>
+      <span class="badge badge-final">最終回</span>
+      <span class="badge badge-date">2026年6月30日（火）</span>
+      <span class="badge badge-module">モジュール 10：多船会合・総合演習</span>
+    </div>
+    <h1>演習・シミュレーション②<br>多船会合・総合演習</h1>
+    <p class="subtitle">多船会合でのCPA優先順位管理・避航計画立案・制限水域判断・10回カリキュラムの総まとめ</p>
+  </div>
+</header>
+
+<main>
+
+  <section class="section" id="objectives">
+    <h2 class="section-title">
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></span>
+      到達目標
+    </h2>
+    <div class="objective-grid">
+      <div class="objective-card grade3">
+        <div class="grade-label">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#2e7d32" stroke-width="1.5"/><text x="8" y="12" text-anchor="middle" font-size="9" fill="#2e7d32" font-weight="bold" font-family="sans-serif">3</text></svg>
+          3級 航海士候補生
+        </div>
+        <p>ARPAを用いた基本的な多船管理ができ、DCPA・TCPAによる優先順位付けを実施できる。10回の学習を振り返り、レーダー活用の基本原則を述べられる。</p>
+      </div>
+      <div class="objective-card grade2">
+        <div class="grade-label">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#1565c0" stroke-width="1.5"/><text x="8" y="12" text-anchor="middle" font-size="9" fill="#1565c0" font-weight="bold" font-family="sans-serif">2</text></svg>
+          2級 航海士候補生
+        </div>
+        <p>複雑シナリオ（多船・狭水道・霧中）で複数船のCPA管理・避航計画を立案し、COLREGsに沿った判断を説明できる。STCWへの対応として今後の学習指針を述べられる。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="content">
+    <h2 class="section-title">
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></span>
+      学習コンテンツ
+    </h2>
+
+    <!-- 1. 多船会合の情報整理 -->
+    <div class="card">
+      <h3>1. 多船会合状況での情報整理（優先順位付け）</h3>
+      <p>複数の他船が混在する状況では、全ての船舶の情報を同時に管理しながら、最も危険度の高い船から優先的に対処する必要がある。</p>
+      <ul>
+        <li><strong>優先度判断の基本指標</strong>：DCPA（小さいほど危険）× TCPA（短いほど緊急）の組み合わせ</li>
+        <li><strong>最優先対応の目安</strong>：DCPA &lt; 設定閾値 かつ TCPA &lt; 設定時間 の両条件を満たす船</li>
+        <li><strong>次優先</strong>：TCPAは短いがDCPAが十分な船（動向を継続監視）</li>
+        <li><strong>監視継続</strong>：DCPA・TCPAともに余裕がある船（定期的な再確認）</li>
+        <li><strong>情報の更新</strong>：他船が変針・変速した場合はトラッキングを再確認する</li>
+      </ul>
+      <div class="warn-box">
+        <strong>重要原則：</strong> 多船会合での避航動作は、1つの大きな明瞭な針路変更で全ての船に対して安全を確保することが理想的である。小さな変針を重ねると、かえって相手船に意図が伝わらず危険な場合がある。
+      </div>
+    </div>
+
+    <!-- SVG図解①: 多船会合鳥瞰図 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 440" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="440" fill="#f0f4fa" rx="12"/>
+        <text x="410" y="28" fill="#1a3a5c" font-size="14" font-weight="bold" text-anchor="middle">図1：多船会合状況の鳥瞰図（自船と複数の他船の配置・ベクタ）</text>
+
+        <!-- 海面背景 -->
+        <rect x="15" y="45" width="790" height="380" fill="#0a1828" rx="10"/>
+        <!-- 海面グラデーション効果 -->
+        <rect x="15" y="45" width="790" height="380" fill="url(#seaGrad)" rx="10" opacity="0.3"/>
+        <defs>
+          <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#0d4060"/>
+            <stop offset="100%" stop-color="#020810"/>
+          </linearGradient>
+        </defs>
+
+        <!-- 海岸線（右上） -->
+        <path d="M 680,45 Q 720,80 750,110 Q 780,140 805,170 L 805,45 Z" fill="#2a3a20" stroke="#3a5a30" stroke-width="1.5"/>
+        <text x="745" y="100" fill="#6a8050" font-size="10" text-anchor="middle" font-weight="bold">陸岸</text>
+
+        <!-- 水深浅瀬 -->
+        <ellipse cx="720" cy="200" rx="50" ry="30" fill="none" stroke="#aa8820" stroke-width="1" stroke-dasharray="3 3"/>
+        <text x="720" y="205" fill="#aa8820" font-size="9" text-anchor="middle">浅瀬注意</text>
+
+        <!-- レーダーリング -->
+        <circle cx="400" cy="230" r="180" fill="none" stroke="#1a4030" stroke-width="0.8" stroke-dasharray="2 4"/>
+        <circle cx="400" cy="230" r="120" fill="none" stroke="#1a4030" stroke-width="0.8" stroke-dasharray="2 4"/>
+        <circle cx="400" cy="230" r="60" fill="none" stroke="#1a4030" stroke-width="0.8" stroke-dasharray="2 4"/>
+
+        <!-- 自船（中央） -->
+        <polygon points="400,210 390,238 400,230 410,238" fill="#00e5a0" stroke="#00c880" stroke-width="1.5"/>
+        <text x="420" y="248" fill="#00e5a0" font-size="11" font-weight="bold">自船</text>
+        <text x="420" y="260" fill="#00e5a0" font-size="9">000°/12kt</text>
+
+        <!-- 自船の進路ベクタ -->
+        <line x1="400" y1="225" x2="400" y2="145" stroke="#00e5a0" stroke-width="2" marker-end="url(#arrowOwn10)"/>
+
+        <!-- 他船A（正面・危険①） -->
+        <circle cx="400" cy="115" r="8" fill="#ff3030" stroke="#ff6060" stroke-width="2"/>
+        <text x="415" y="113" fill="#ff6060" font-size="11" font-weight="bold">A</text>
+        <!-- 真運動ベクタA（南下）→ 正面会合 -->
+        <line x1="400" y1="115" x2="400" y2="155" stroke="#40b8ff" stroke-width="2" marker-end="url(#arrowBlue10)"/>
+        <!-- 相対運動ベクタA（画面中心へ）-->
+        <line x1="400" y1="115" x2="400" y2="195" stroke="#ffdd40" stroke-width="1.5" stroke-dasharray="4 2" marker-end="url(#arrowYellow10)"/>
+        <!-- ARPA情報A -->
+        <rect x="30" y="88" width="155" height="65" fill="rgba(255,30,30,0.2)" stroke="#ff3030" stroke-width="1" rx="5"/>
+        <text x="107" y="107" fill="#ff6060" font-size="10" font-weight="bold" text-anchor="middle">船A（最優先）</text>
+        <text x="107" y="122" fill="#8abadc" font-size="9.5" text-anchor="middle">CPA：0.1NM ⚠</text>
+        <text x="107" y="136" fill="#8abadc" font-size="9.5" text-anchor="middle">TCPA：8 min ⚠</text>
+        <text x="107" y="150" fill="#ff4444" font-size="9" text-anchor="middle">→ 即時対応必要</text>
+        <line x1="185" y1="120" x2="396" y2="118" stroke="#ff3030" stroke-width="1" stroke-dasharray="3 2"/>
+
+        <!-- 他船B（右舷横切り・危険②） -->
+        <circle cx="510" cy="190" r="7" fill="#ff8800" stroke="#ffaa40" stroke-width="2"/>
+        <text x="523" y="188" fill="#ffaa40" font-size="11" font-weight="bold">B</text>
+        <!-- 真運動ベクタB（左方向）-->
+        <line x1="510" y1="190" x2="460" y2="185" stroke="#40b8ff" stroke-width="2" marker-end="url(#arrowBlue10)"/>
+        <!-- 相対運動ベクタB -->
+        <line x1="510" y1="190" x2="430" y2="225" stroke="#ffdd40" stroke-width="1.5" stroke-dasharray="4 2" marker-end="url(#arrowYellow10)"/>
+        <!-- ARPA情報B -->
+        <rect x="580" y="155" width="155" height="65" fill="rgba(255,136,0,0.15)" stroke="#ff8800" stroke-width="1" rx="5"/>
+        <text x="657" y="174" fill="#ffaa40" font-size="10" font-weight="bold" text-anchor="middle">船B（第2優先）</text>
+        <text x="657" y="189" fill="#8abadc" font-size="9.5" text-anchor="middle">CPA：0.4NM ⚠</text>
+        <text x="657" y="203" fill="#8abadc" font-size="9.5" text-anchor="middle">TCPA：15 min</text>
+        <text x="657" y="217" fill="#ff8800" font-size="9" text-anchor="middle">→ 右舷→避航義務</text>
+        <line x1="580" y1="187" x2="516" y2="190" stroke="#ff8800" stroke-width="1" stroke-dasharray="3 2"/>
+
+        <!-- 他船C（追い越され・低優先） -->
+        <circle cx="380" cy="310" r="6" fill="#60cc60" stroke="#80ee80" stroke-width="1.5"/>
+        <text x="365" y="315" fill="#80ee80" font-size="11" font-weight="bold">C</text>
+        <!-- 真運動ベクタC（北方向）-->
+        <line x1="380" y1="310" x2="376" y2="275" stroke="#40b8ff" stroke-width="1.5" marker-end="url(#arrowBlue10)"/>
+        <!-- 相対運動ベクタC（後方） -->
+        <line x1="380" y1="310" x2="372" y2="360" stroke="#ffdd40" stroke-width="1.5" stroke-dasharray="4 2" marker-end="url(#arrowYellow10)"/>
+        <!-- ARPA情報C -->
+        <rect x="30" y="320" width="150" height="65" fill="rgba(60,180,60,0.15)" stroke="#60cc60" stroke-width="1" rx="5"/>
+        <text x="105" y="339" fill="#80ee80" font-size="10" font-weight="bold" text-anchor="middle">船C（監視継続）</text>
+        <text x="105" y="354" fill="#8abadc" font-size="9.5" text-anchor="middle">CPA：1.8NM ✓</text>
+        <text x="105" y="368" fill="#8abadc" font-size="9.5" text-anchor="middle">TCPA：28 min</text>
+        <text x="105" y="382" fill="#60cc60" font-size="9" text-anchor="middle">→ 継続監視</text>
+        <line x1="180" y1="350" x2="376" y2="313" stroke="#60cc60" stroke-width="1" stroke-dasharray="3 2"/>
+
+        <!-- 他船D（遠方・長距離監視） -->
+        <circle cx="250" cy="120" r="5" fill="#6080ff" stroke="#8090ff" stroke-width="1.5"/>
+        <text x="263" y="118" fill="#8090ff" font-size="10">D</text>
+        <line x1="250" y1="120" x2="265" y2="100" stroke="#40b8ff" stroke-width="1.5" marker-end="url(#arrowBlue10)"/>
+
+        <!-- 回避矢印（自船の大きな右転） -->
+        <path d="M 400,230 Q 460,200 490,240" fill="none" stroke="#e8a020" stroke-width="3" stroke-dasharray="6 3" marker-end="url(#arrowAcc10)"/>
+        <text x="450" y="205" fill="#e8a020" font-size="11" font-weight="bold">大きく右転！</text>
+        <text x="450" y="218" fill="#e8a020" font-size="9">（一動作で全船対応）</text>
+
+        <!-- マーカー定義 -->
+        <defs>
+          <marker id="arrowOwn10" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#00e5a0"/></marker>
+          <marker id="arrowBlue10" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#40b8ff"/></marker>
+          <marker id="arrowYellow10" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#ffdd40"/></marker>
+          <marker id="arrowAcc10" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#e8a020"/></marker>
+        </defs>
+
+        <!-- 凡例 -->
+        <rect x="600" y="335" width="200" height="80" fill="rgba(10,24,40,0.8)" stroke="#2a4060" stroke-width="1" rx="6"/>
+        <rect x="610" y="345" width="12" height="3" fill="#40b8ff" rx="1"/>
+        <text x="628" y="352" fill="#8abadc" font-size="9">真運動ベクタ</text>
+        <line x1="610" y1="365" x2="622" y2="365" stroke="#ffdd40" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <text x="628" y="369" fill="#8abadc" font-size="9">相対運動ベクタ</text>
+        <circle cx="616" cy="384" r="4" fill="#ff3030"/>
+        <text x="628" y="387" fill="#8abadc" font-size="9">危険度：高</text>
+        <circle cx="616" cy="399" r="4" fill="#60cc60"/>
+        <text x="628" y="402" fill="#8abadc" font-size="9">危険度：低（監視継続）</text>
+      </svg>
+      <figcaption>図1：多船会合状況の鳥瞰図 — 船A（最優先：正面会合）・船B（第2優先：横切り）・船C（監視継続）への対応と一動作避航</figcaption>
+    </figure>
+
+    <!-- 2. CPA優先順位マトリックス -->
+    <div class="card">
+      <h3>2. CPA優先順位マトリックスによる管理</h3>
+      <p>多船会合では、DCPAとTCPAの組み合わせで各船の危険度を分類する。以下のマトリックスが判断の基準となる。</p>
+    </div>
+
+    <!-- SVG図解②: CPA優先順位マトリックス -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 400" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="400" fill="#f0f4fa" rx="12"/>
+        <text x="410" y="28" fill="#1a3a5c" font-size="14" font-weight="bold" text-anchor="middle">図2：CPA優先順位マトリックス（DCPA vs TCPA プロット）</text>
+
+        <!-- グラフ領域 -->
+        <rect x="80" y="50" width="650" height="300" fill="#fff" stroke="#d0dae6" stroke-width="1.5" rx="8"/>
+
+        <!-- 危険ゾーン（赤） -->
+        <rect x="80" y="50" width="215" height="150" fill="rgba(198,40,40,0.12)" rx="0"/>
+        <text x="187" y="115" fill="#c62828" font-size="12" font-weight="bold" text-anchor="middle">⚠ 危険</text>
+        <text x="187" y="130" fill="#c62828" font-size="10" text-anchor="middle">即時対応</text>
+
+        <!-- 警戒ゾーン（黄） -->
+        <rect x="295" y="50" width="215" height="150" fill="rgba(232,160,32,0.12)" rx="0"/>
+        <text x="402" y="115" fill="#e8a020" font-size="12" font-weight="bold" text-anchor="middle">⚡ 警戒</text>
+        <text x="402" y="130" fill="#e8a020" font-size="10" text-anchor="middle">継続監視・準備</text>
+
+        <!-- 注意ゾーン（黄緑） -->
+        <rect x="80" y="200" width="215" height="150" fill="rgba(130,160,32,0.10)" rx="0"/>
+        <text x="187" y="268" fill="#6d8000" font-size="12" font-weight="bold" text-anchor="middle">⚡ 注意</text>
+        <text x="187" y="283" fill="#6d8000" font-size="10" text-anchor="middle">早めの監視強化</text>
+
+        <!-- 安全ゾーン（緑） -->
+        <rect x="295" y="200" width="435" height="150" fill="rgba(46,125,50,0.08)" rx="0"/>
+        <text x="512" y="268" fill="#2e7d32" font-size="12" font-weight="bold" text-anchor="middle">✓ 安全域</text>
+        <text x="512" y="283" fill="#2e7d32" font-size="10" text-anchor="middle">通常監視継続</text>
+
+        <!-- 軸 -->
+        <line x1="80" y1="350" x2="730" y2="350" stroke="#333" stroke-width="2"/>
+        <line x1="80" y1="50" x2="80" y2="350" stroke="#333" stroke-width="2"/>
+
+        <!-- X軸ラベル -->
+        <text x="405" y="385" fill="#1a3a5c" font-size="12" font-weight="bold" text-anchor="middle">TCPA（分）→ 短いほど危険</text>
+        <text x="80" y="366" fill="#666" font-size="10" text-anchor="middle">0</text>
+        <text x="295" y="366" fill="#666" font-size="10" text-anchor="middle">10</text>
+        <text x="510" y="366" fill="#666" font-size="10" text-anchor="middle">20</text>
+        <text x="725" y="366" fill="#666" font-size="10" text-anchor="middle">30</text>
+        <line x1="295" y1="50" x2="295" y2="350" stroke="#e0e8f0" stroke-width="1" stroke-dasharray="4 3"/>
+        <line x1="510" y1="50" x2="510" y2="350" stroke="#e0e8f0" stroke-width="1" stroke-dasharray="4 3"/>
+
+        <!-- Y軸ラベル -->
+        <text x="40" y="205" fill="#1a3a5c" font-size="11" font-weight="bold" text-anchor="middle" transform="rotate(-90,40,205)">DCPA（NM）→ 小さいほど危険</text>
+        <text x="70" y="354" fill="#666" font-size="10" text-anchor="end">0</text>
+        <text x="70" y="204" fill="#666" font-size="10" text-anchor="end">0.5</text>
+        <text x="70" y="54" fill="#666" font-size="10" text-anchor="end">1.0</text>
+        <line x1="80" y1="200" x2="730" y2="200" stroke="#e0e8f0" stroke-width="1" stroke-dasharray="4 3"/>
+
+        <!-- 閾値線 -->
+        <line x1="80" y1="200" x2="730" y2="200" stroke="#555" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <line x1="295" y1="50" x2="295" y2="350" stroke="#555" stroke-width="1.5" stroke-dasharray="5 3"/>
+        <text x="298" y="68" fill="#555" font-size="9.5">閾値(TCPA)：10分</text>
+        <text x="83" y="196" fill="#555" font-size="9.5">閾値(DCPA)：0.5NM</text>
+
+        <!-- プロット点 -->
+        <!-- 船A（TCPA=8min, DCPA=0.1NM） -->
+        <circle cx="252" cy="322" r="10" fill="#ff3030" stroke="#fff" stroke-width="2"/>
+        <text x="252" y="326" fill="#fff" font-size="9" font-weight="bold" text-anchor="middle">A</text>
+        <text x="252" y="344" fill="#ff3030" font-size="9.5" text-anchor="middle" font-weight="bold">最優先</text>
+
+        <!-- 船B（TCPA=15min, DCPA=0.4NM） -->
+        <circle cx="402" cy="230" r="9" fill="#ff8800" stroke="#fff" stroke-width="2"/>
+        <text x="402" y="234" fill="#fff" font-size="9" font-weight="bold" text-anchor="middle">B</text>
+        <text x="402" y="248" fill="#ff8800" font-size="9.5" text-anchor="middle" font-weight="bold">第2優先</text>
+
+        <!-- 船C（TCPA=28min, DCPA=1.8NM） -->
+        <circle cx="687" cy="110" r="8" fill="#60cc60" stroke="#fff" stroke-width="2"/>
+        <text x="687" y="114" fill="#fff" font-size="9" font-weight="bold" text-anchor="middle">C</text>
+        <text x="687" y="128" fill="#2e7d32" font-size="9.5" text-anchor="middle">監視継続</text>
+
+        <!-- 船D（TCPA=22min, DCPA=0.6NM） -->
+        <circle cx="555" cy="178" r="8" fill="#6080ff" stroke="#fff" stroke-width="2"/>
+        <text x="555" y="182" fill="#fff" font-size="9" font-weight="bold" text-anchor="middle">D</text>
+        <text x="555" y="170" fill="#6080ff" font-size="9.5" text-anchor="middle">要注意</text>
+      </svg>
+      <figcaption>図2：CPA優先順位マトリックス — DCPA（縦軸）× TCPA（横軸）のプロット。船A：即時対応、船B：第2優先、船D：注意、船C：安全域</figcaption>
+    </figure>
+
+    <!-- 3. 避航計画 -->
+    <div class="card">
+      <h3>3. 避航計画の立案（大きく明瞭な針路変更の重要性）</h3>
+      <ul>
+        <li><strong>COLREGs規則8の原則</strong>：避航動作は大きく明瞭で、単独の動作で行うことが基本である</li>
+        <li><strong>一動作解</strong>：1つの針路変更で、危険なすべての船舶に対して安全なCPAを確保する解を求める</li>
+        <li><strong>相手船への明瞭性</strong>：小刻みな変針では相手船の航海士に意図が伝わらず、かえって混乱を招く危険がある</li>
+        <li><strong>避航後の確認</strong>：変針後、ARPAまたはプロッティングで新しいCPAを確認する</li>
+        <li><strong>変針タイミング</strong>：「早期・大幅・明瞭」— Late is dangerous!</li>
+      </ul>
+    </div>
+
+    <!-- 4. 制限水域・狭水道での複合判断 -->
+    <div class="card">
+      <h3>4. 制限水域・狭水道での複合判断</h3>
+      <div class="two-col">
+        <div>
+          <strong style="color:var(--primary); display:block; margin-bottom:0.4rem;">追加考慮要素</strong>
+          <ul>
+            <li>浅瀬・岩礁による針路制約</li>
+            <li>通航分離方式（TSS）の存在</li>
+            <li>水深・潮流による操縦性への影響</li>
+            <li>パイロット乗船の要否</li>
+            <li>視界制限状態との複合シナリオ</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="color:var(--primary); display:block; margin-bottom:0.4rem;">運用上の対応</strong>
+          <ul>
+            <li>海図への余裕水深の確認</li>
+            <li>変針可能方向の事前特定</li>
+            <li>速力低減による時間的余裕の確保</li>
+            <li>ARPAと目視・レーダー観測の並行実施</li>
+            <li>VHFによる他船との情報共有</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SVG図解③: 10回カリキュラムまとめ概念図 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 480" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="480" fill="#f0f4fa" rx="12"/>
+        <text x="410" y="30" fill="#1a3a5c" font-size="14" font-weight="bold" text-anchor="middle">図3：10回カリキュラムのまとめ概念図（モジュール相関図）</text>
+
+        <!-- 中央コア：安全運航 -->
+        <circle cx="410" cy="245" r="60" fill="#1a3a5c" stroke="#e8a020" stroke-width="3"/>
+        <text x="410" y="237" fill="#e8a020" font-size="12" font-weight="bold" text-anchor="middle">安全な</text>
+        <text x="410" y="252" fill="#e8a020" font-size="12" font-weight="bold" text-anchor="middle">レーダー</text>
+        <text x="410" y="267" fill="#e8a020" font-size="12" font-weight="bold" text-anchor="middle">運用</text>
+
+        <!-- モジュールカード定義 -->
+        <!-- 第1回: レーダー原理 -->
+        <rect x="30" y="55" width="130" height="70" fill="#1a3a5c" rx="8" stroke="#40b8ff" stroke-width="1.5"/>
+        <text x="95" y="78" fill="#40b8ff" font-size="10" font-weight="bold" text-anchor="middle">第1回</text>
+        <text x="95" y="94" fill="#fff" font-size="9.5" text-anchor="middle">レーダーの</text>
+        <text x="95" y="107" fill="#fff" font-size="9.5" text-anchor="middle">基本原理</text>
+
+        <!-- 第2回: 画面と調整 -->
+        <rect x="30" y="145" width="130" height="70" fill="#1a3a5c" rx="8" stroke="#40b8ff" stroke-width="1.5"/>
+        <text x="95" y="168" fill="#40b8ff" font-size="10" font-weight="bold" text-anchor="middle">第2回</text>
+        <text x="95" y="184" fill="#fff" font-size="9.5" text-anchor="middle">画面表示・</text>
+        <text x="95" y="197" fill="#fff" font-size="9.5" text-anchor="middle">感度調整</text>
+
+        <!-- 第3回: 偽像・クラッター -->
+        <rect x="30" y="235" width="130" height="70" fill="#1a3a5c" rx="8" stroke="#40b8ff" stroke-width="1.5"/>
+        <text x="95" y="258" fill="#40b8ff" font-size="10" font-weight="bold" text-anchor="middle">第3回</text>
+        <text x="95" y="274" fill="#fff" font-size="9.5" text-anchor="middle">偽像・クラッター</text>
+        <text x="95" y="287" fill="#fff" font-size:9.5" text-anchor="middle">対策</text>
+
+        <!-- 第4回: 運動表示 -->
+        <rect x="30" y="325" width="130" height="70" fill="#1a3a5c" rx="8" stroke="#40b8ff" stroke-width="1.5"/>
+        <text x="95" y="348" fill="#40b8ff" font-size="10" font-weight="bold" text-anchor="middle">第4回</text>
+        <text x="95" y="364" fill="#fff" font-size="9.5" text-anchor="middle">真運動/相対</text>
+        <text x="95" y="377" fill="#fff" font-size="9.5" text-anchor="middle">運動表示</text>
+
+        <!-- 第5回: COLREGs -->
+        <rect x="30" y="415" width="130" height="55" fill="#1a3a5c" rx="8" stroke="#40b8ff" stroke-width="1.5"/>
+        <text x="95" y="435" fill="#40b8ff" font-size="10" font-weight="bold" text-anchor="middle">第5回</text>
+        <text x="95" y="451" fill="#fff" font-size="9.5" text-anchor="middle">COLREGs基礎</text>
+
+        <!-- 第6回: ARPA（ハイライト） -->
+        <rect x="660" y="55" width="130" height="70" fill="#c62828" rx="8" stroke="#ff8080" stroke-width="2"/>
+        <text x="725" y="78" fill="#ffaaaa" font-size="10" font-weight="bold" text-anchor="middle">第6回 ★</text>
+        <text x="725" y="94" fill="#fff" font-size="9.5" text-anchor="middle">ARPA /</text>
+        <text x="725" y="107" fill="#fff" font-size="9.5" text-anchor="middle">自動衝突予防</text>
+
+        <!-- 第7回: 視界制限（ハイライト） -->
+        <rect x="660" y="145" width="130" height="70" fill="#7b1fa2" rx="8" stroke="#cc80ff" stroke-width="2"/>
+        <text x="725" y="168" fill="#cc80ff" font-size="10" font-weight="bold" text-anchor="middle">第7回 ★</text>
+        <text x="725" y="184" fill="#fff" font-size="9.5" text-anchor="middle">視界制限状態</text>
+        <text x="725" y="197" fill="#fff" font-size="9.5" text-anchor="middle">レーダー運用</text>
+
+        <!-- 第8回: 固体化・スプリアス（ハイライト） -->
+        <rect x="660" y="235" width="130" height="70" fill="#006064" rx="8" stroke="#40eeee" stroke-width="2"/>
+        <text x="725" y="258" fill="#40eeee" font-size="10" font-weight="bold" text-anchor="middle">第8回 ★</text>
+        <text x="725" y="274" fill="#fff" font-size="9.5" text-anchor="middle">固体化レーダー</text>
+        <text x="725" y="287" fill="#fff" font-size="9.5" text-anchor="middle">スプリアス規制</text>
+
+        <!-- 第9回: プロッティング演習（ハイライト） -->
+        <rect x="660" y="325" width="130" height="70" fill="#1a5c2a" rx="8" stroke="#60ee80" stroke-width="2"/>
+        <text x="725" y="348" fill="#60ee80" font-size="10" font-weight="bold" text-anchor="middle">第9回 ★</text>
+        <text x="725" y="364" fill="#fff" font-size="9.5" text-anchor="middle">演習①</text>
+        <text x="725" y="377" fill="#fff" font-size="9.5" text-anchor="middle">プロッティング</text>
+
+        <!-- 第10回: 総合演習（ハイライト） -->
+        <rect x="660" y="415" width="130" height="55" fill="#e8a020" rx="8" stroke="#fff" stroke-width="2"/>
+        <text x="725" y="435" fill="#1a3a5c" font-size="10" font-weight="bold" text-anchor="middle">第10回 ★</text>
+        <text x="725" y="451" fill="#1a3a5c" font-size="9.5" text-anchor="middle">多船会合・総合演習</text>
+
+        <!-- 矢印：第1-5回→中央 -->
+        <line x1="160" y1="90" x2="348" y2="210" stroke="#40b8ff" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowSm10)"/>
+        <line x1="160" y1="180" x2="348" y2="225" stroke="#40b8ff" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowSm10)"/>
+        <line x1="160" y1="270" x2="350" y2="245" stroke="#40b8ff" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowSm10)"/>
+        <line x1="160" y1="360" x2="350" y2="265" stroke="#40b8ff" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowSm10)"/>
+        <line x1="160" y1="442" x2="352" y2="278" stroke="#40b8ff" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowSm10)"/>
+
+        <!-- 矢印：中央→第6-10回 -->
+        <line x1="468" y1="212" x2="658" y2="116" stroke="#e8a020" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowAccSm10)"/>
+        <line x1="468" y1="225" x2="658" y2="180" stroke="#e8a020" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowAccSm10)"/>
+        <line x1="470" y1="245" x2="658" y2="270" stroke="#e8a020" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowAccSm10)"/>
+        <line x1="468" y1="265" x2="658" y2="358" stroke="#e8a020" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowAccSm10)"/>
+        <line x1="462" y1="278" x2="658" y2="440" stroke="#e8a020" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrowAccSm10)"/>
+
+        <defs>
+          <marker id="arrowSm10" markerWidth="6" markerHeight="5" refX="4" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="#40b8ff"/></marker>
+          <marker id="arrowAccSm10" markerWidth="6" markerHeight="5" refX="4" refY="2.5" orient="auto"><polygon points="0 0,6 2.5,0 5" fill="#e8a020"/></marker>
+        </defs>
+
+        <!-- ★マーク説明 -->
+        <rect x="290" y="440" width="240" height="32" fill="rgba(232,160,32,0.15)" stroke="#e8a020" stroke-width="1" rx="6"/>
+        <text x="410" y="460" fill="#e8a020" font-size="10.5" font-weight="bold" text-anchor="middle">★ = 本カリキュラム（第6〜10回）</text>
+      </svg>
+      <figcaption>図3：10回カリキュラムのまとめ概念図 — 基礎知識（第1〜5回）が中核の「安全なレーダー運用」を支え、応用・演習（第6〜10回）につながる構造</figcaption>
+    </figure>
+
+    <!-- 5. カリキュラムまとめ・今後の指針 -->
+    <div class="completion-box">
+      <h3>第6〜10回 カリキュラム 到達確認</h3>
+      <p>本カリキュラムを通じて、ARPAの運用・視界制限状態での当直・固体化レーダーの特性と法的義務・プロッティング技術・多船会合の管理を学習した。これらはSTCW条約に基づく航海士の基本的なコンピテンシーの一部である。</p>
+    </div>
+
+    <div class="card">
+      <h3>5. 今後の学習指針（STCW要件・実務でのレーダー活用）</h3>
+      <div class="two-col">
+        <div>
+          <strong style="color:var(--grade3); display:block; margin-bottom:0.4rem;">3級航海士として</strong>
+          <ul>
+            <li>STCW II/1：レーダー・ARPAの基本操作</li>
+            <li>レーダー模擬装置訓練（RADAR Simulator）</li>
+            <li>ARPAによる衝突予防の実践</li>
+            <li>海技士試験の口述・筆記対策</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="color:var(--grade2); display:block; margin-bottom:0.4rem;">2級航海士として</strong>
+          <ul>
+            <li>STCW II/2：上級レーダー・ARPAの活用</li>
+            <li>ARPA模擬装置（ARPA Simulator）の熟練</li>
+            <li>BRM（ブリッジリソースマネジメント）訓練</li>
+            <li>複雑シナリオでの多船管理・COLREGs適用</li>
+          </ul>
+        </div>
+      </div>
+      <div class="info-box">
+        <strong>実務への架け橋：</strong> 今回学んだレーダー技術は、実際の海上当直における最も重要なスキルの一つである。座学・シミュレーターで培った知識を、実習・乗船実習で実践的なスキルとして定着させることが求められる。レーダーはあくまで航海士の判断を支援するツールであり、最終的な判断責任は航海士にあることを常に意識すること。
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ルーブリック -->
+  <section class="section" id="rubric">
+    <h2 class="section-title">
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zM5 3H3v18l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V3H5zm12 14H7V5h10v12z"/></svg></span>
+      評価ルーブリック（4段階）
+    </h2>
+    <div class="rubric-wrap">
+      <table class="rubric-table">
+        <thead>
+          <tr>
+            <th>評価観点</th>
+            <th><span class="score-badge badge-4">4</span><br>優秀</th>
+            <th><span class="score-badge badge-3">3</span><br>良</th>
+            <th><span class="score-badge badge-2">2</span><br>可</th>
+            <th><span class="score-badge badge-1">1</span><br>不可</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>多船会合の<br>情報整理</td>
+            <td class="score-4">CPA・TCPA・距離を総合した優先順位付けを正確に行い、説明できる</td>
+            <td class="score-3">優先順位付けの方法を正確に説明できる</td>
+            <td class="score-2">優先順位の考え方を理解している</td>
+            <td class="score-1">対応できない</td>
+          </tr>
+          <tr>
+            <td>避航計画<br>の立案</td>
+            <td class="score-4">全船を考慮した1つの大きな避航動作で解を出し、確認手順まで説明できる</td>
+            <td class="score-3">全船を考慮した避航動作を立案できる</td>
+            <td class="score-2">各船個別の対処を述べるにとどまる</td>
+            <td class="score-1">立案できない</td>
+          </tr>
+          <tr>
+            <td>COLREGsの<br>適用</td>
+            <td class="score-4">多船会合でのCOLREGsの適用（操縦性・優先順位等）を正確に述べられる</td>
+            <td class="score-3">基本ルールをCOLREGsに関連付けて説明できる</td>
+            <td class="score-2">COLREGsの基本規定を述べられる</td>
+            <td class="score-1">説明できない</td>
+          </tr>
+          <tr>
+            <td>総合的<br>状況判断</td>
+            <td class="score-4">速力・針路・陸岸・水深等を総合考慮した判断を説明できる</td>
+            <td class="score-3">2要素以上を考慮した判断を説明できる</td>
+            <td class="score-2">単一要素のみ考慮している</td>
+            <td class="score-1">判断できない</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 確認テスト -->
+  <section class="section" id="quiz">
+    <h2 class="section-title">
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></span>
+      確認テスト（解答なし）
+    </h2>
+
+    <div class="quiz-item">
+      <div class="quiz-header">
+        <span class="quiz-num">問題 1</span>
+        <span class="quiz-grade g3">3級</span>
+        <span class="quiz-type">択一式</span>
+      </div>
+      <p class="quiz-question">多船会合状況でARPAを使用する際、最初に対処すべき船はどれか。</p>
+      <ul class="quiz-choices">
+        <li>ア．最も大きい船</li>
+        <li>イ．最も近い距離にある船</li>
+        <li>ウ．DCPAが最も小さく（危険度が高く）TCPAが短い船</li>
+        <li>エ．最も速い速力の船</li>
+      </ul>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-header">
+        <span class="quiz-num">問題 2</span>
+        <span class="quiz-grade g3">3級</span>
+        <span class="quiz-type">記述式</span>
+      </div>
+      <p class="quiz-question">ARPAシミュレーター演習で学ぶべき最も重要なポイントを自分の言葉で述べなさい。</p>
+      <div class="quiz-essay">（解答欄）</div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-header">
+        <span class="quiz-num">問題 3</span>
+        <span class="quiz-grade g2">2級</span>
+        <span class="quiz-type">記述式</span>
+      </div>
+      <p class="quiz-question">複数船が輻輳する狭水道を視界制限状態で航行する場合の、レーダー運用と避航計画の立案手順を説明しなさい。</p>
+      <div class="quiz-essay">（解答欄）</div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-header">
+        <span class="quiz-num">問題 4</span>
+        <span class="quiz-grade g2">2級</span>
+        <span class="quiz-type">記述式（自由論述）</span>
+      </div>
+      <p class="quiz-question">この10回のレーダー教育を通じて、3級・2級航海士として最も重要だと考えるレーダー活用の原則を述べなさい（自由回答・ただし具体的かつ根拠のある考察を求める）。</p>
+      <div class="quiz-essay" style="min-height:120px;">（解答欄）</div>
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  <strong>広島商船高等専門学校</strong><br>
+  船舶レーダー教育カリキュラム ｜ 第10回 / 全10回<br>
+  対象：3級・2級航海士候補生（高専・海技大学）<br>
+  <span class="final-badge">本カリキュラム終了 — お疲れ様でした</span>
+</footer>
+
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  var scrollRaf=0;
+  function emitScroll(){
+    scrollRaf=0;
+    var x=window.scrollX||window.pageXOffset||0;
+    var y=window.scrollY||window.pageYOffset||0;
+    window.parent.postMessage({type:'INLINE_EDIT_SCROLL',scrollX:x,scrollY:y},'*');
+  }
+  window.addEventListener('scroll',function(){
+    if(scrollRaf)return;
+    scrollRaf=requestAnimationFrame(emitScroll);
+  },{passive:true,capture:true});
+  emitScroll();
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>

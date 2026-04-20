@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第9回 演習・シミュレーション①（プロッティング） | 船舶レーダー教育</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a3a5c; --primary-dark: #0f2340; --primary-light: #2a5080;
+    --accent: #e8a020; --accent-light: #f5c060;
+    --bg: #f4f6f9; --card-bg: #ffffff; --text: #2c3e50; --text-muted: #5a6a7a;
+    --grade3: #2e7d32; --grade3-bg: #e8f5e9; --grade2: #1565c0; --grade2-bg: #e3f2fd;
+    --border: #d0dae6; --shadow: 0 2px 12px rgba(26,58,92,0.10);
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Noto Sans JP','Noto Sans',sans-serif; background:var(--bg); color:var(--text); line-height:1.7; font-size:15px; }
+  nav { background:var(--primary-dark); padding:0 2rem; display:flex; align-items:center; justify-content:space-between; height:56px; position:sticky; top:0; z-index:100; box-shadow:0 2px 8px rgba(0,0,0,0.3); }
+  nav .nav-brand { color:#fff; font-weight:700; font-size:0.95rem; letter-spacing:0.03em; display:flex; align-items:center; gap:0.7rem; }
+  nav .nav-brand svg { width:28px; height:28px; }
+  nav .nav-session { background:var(--accent); color:var(--primary-dark); font-weight:700; font-size:0.85rem; padding:0.3rem 1rem; border-radius:20px; }
+  nav .nav-links { display:flex; gap:1.5rem; list-style:none; }
+  nav .nav-links a { color:rgba(255,255,255,0.75); text-decoration:none; font-size:0.85rem; }
+  nav .nav-links a:hover { color:var(--accent-light); }
+  .page-header { background:linear-gradient(135deg,#1a3a5c 0%,#0f2340 60%,#0a1828 100%); color:#fff; padding:3.5rem 2rem 3rem; position:relative; overflow:hidden; }
+  .page-header::before { content:''; position:absolute; right:-80px; top:-80px; width:400px; height:400px; border-radius:50%; background:rgba(255,255,255,0.03); }
+  .page-header::after { content:''; position:absolute; right:60px; bottom:-120px; width:300px; height:300px; border-radius:50%; background:rgba(232,160,32,0.08); }
+  .header-inner { max-width:1100px; margin:0 auto; position:relative; z-index:1; }
+  .header-meta { display:flex; flex-wrap:wrap; gap:0.5rem 1.2rem; margin-bottom:1.2rem; align-items:center; }
+  .badge { display:inline-block; padding:0.2rem 0.85rem; border-radius:20px; font-size:0.78rem; font-weight:700; letter-spacing:0.06em; }
+  .badge-session { background:var(--accent); color:var(--primary-dark); }
+  .badge-date { background:rgba(255,255,255,0.15); color:rgba(255,255,255,0.9); }
+  .badge-module { background:rgba(255,255,255,0.10); color:rgba(255,255,255,0.75); border:1px solid rgba(255,255,255,0.2); }
+  .page-header h1 { font-size:clamp(1.6rem,3.5vw,2.4rem); font-weight:900; line-height:1.3; margin-bottom:0.8rem; }
+  .page-header .subtitle { font-size:1rem; color:rgba(255,255,255,0.75); max-width:700px; }
+  main { max-width:1100px; margin:0 auto; padding:2.5rem 2rem 4rem; }
+  .section { margin-bottom:3rem; }
+  .section-title { font-size:1.25rem; font-weight:700; color:var(--primary); padding-bottom:0.6rem; border-bottom:3px solid var(--accent); margin-bottom:1.5rem; display:flex; align-items:center; gap:0.6rem; }
+  .section-title .icon { width:32px; height:32px; background:var(--primary); border-radius:8px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+  .section-title .icon svg { width:18px; height:18px; fill:#fff; }
+  .objective-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+  @media(max-width:700px){.objective-grid{grid-template-columns:1fr;}}
+  .objective-card { padding:1.4rem 1.6rem; border-radius:10px; border-left:5px solid; box-shadow:var(--shadow); }
+  .objective-card.grade3{background:var(--grade3-bg);border-color:var(--grade3);}
+  .objective-card.grade2{background:var(--grade2-bg);border-color:var(--grade2);}
+  .objective-card .grade-label{font-size:0.78rem;font-weight:700;letter-spacing:0.08em;margin-bottom:0.5rem;display:flex;align-items:center;gap:0.4rem;}
+  .objective-card.grade3 .grade-label{color:var(--grade3);}
+  .objective-card.grade2 .grade-label{color:var(--grade2);}
+  .objective-card p{font-size:0.95rem;line-height:1.65;}
+  .card{background:var(--card-bg);border-radius:10px;box-shadow:var(--shadow);padding:1.8rem 2rem;margin-bottom:1.5rem;}
+  .card h3{font-size:1.05rem;font-weight:700;color:var(--primary);margin-bottom:0.8rem;padding-bottom:0.4rem;border-bottom:2px solid var(--bg);display:flex;align-items:center;gap:0.5rem;}
+  .card h3::before{content:'';display:inline-block;width:6px;height:6px;background:var(--accent);border-radius:50%;}
+  .card ul,.card ol{padding-left:1.4rem;margin-top:0.5rem;}
+  .card li{margin-bottom:0.4rem;font-size:0.93rem;}
+  .card p{font-size:0.93rem;margin-bottom:0.6rem;}
+  .info-box{background:linear-gradient(135deg,#e8f0fb,#d8e8fb);border-left:4px solid var(--primary-light);padding:1rem 1.3rem;border-radius:0 8px 8px 0;margin:1rem 0;font-size:0.9rem;}
+  .warn-box{background:#fff8e1;border-left:4px solid var(--accent);padding:1rem 1.3rem;border-radius:0 8px 8px 0;margin:1rem 0;font-size:0.9rem;}
+  .svg-figure{background:var(--card-bg);border-radius:10px;box-shadow:var(--shadow);padding:1.5rem;margin-bottom:1.5rem;}
+  .svg-figure figcaption{text-align:center;font-size:0.83rem;color:var(--text-muted);margin-top:0.8rem;font-weight:500;}
+  .svg-figure svg{width:100%;height:auto;display:block;}
+  .rubric-wrap{overflow-x:auto;}
+  .rubric-table{width:100%;border-collapse:collapse;font-size:0.85rem;background:var(--card-bg);border-radius:10px;overflow:hidden;box-shadow:var(--shadow);}
+  .rubric-table thead tr{background:var(--primary);color:#fff;}
+  .rubric-table thead th{padding:0.9rem 1rem;text-align:center;font-weight:700;}
+  .rubric-table thead th:first-child{text-align:left;}
+  .rubric-table tbody tr:nth-child(even){background:#f8fafc;}
+  .rubric-table tbody td{padding:0.85rem 1rem;border-bottom:1px solid var(--border);vertical-align:top;line-height:1.55;}
+  .rubric-table tbody td:first-child{font-weight:700;color:var(--primary);min-width:130px;}
+  .score-4{background:#e8f5e9!important;}.score-3{background:#e3f2fd!important;}.score-2{background:#fff8e1!important;}.score-1{background:#fce4ec!important;}
+  .score-badge{display:inline-block;width:28px;height:28px;line-height:28px;border-radius:50%;text-align:center;font-weight:700;font-size:0.9rem;margin-bottom:0.3rem;}
+  .badge-4{background:#2e7d32;color:#fff;}.badge-3{background:#1565c0;color:#fff;}.badge-2{background:#f57f17;color:#fff;}.badge-1{background:#c62828;color:#fff;}
+  .quiz-item{background:var(--card-bg);border-radius:10px;box-shadow:var(--shadow);padding:1.6rem 2rem;margin-bottom:1.2rem;border-top:4px solid var(--primary);}
+  .quiz-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:0.8rem;}
+  .quiz-num{background:var(--primary);color:#fff;font-weight:700;font-size:0.85rem;padding:0.3rem 0.8rem;border-radius:6px;flex-shrink:0;white-space:nowrap;}
+  .quiz-grade{font-size:0.78rem;font-weight:700;padding:0.2rem 0.6rem;border-radius:12px;flex-shrink:0;}
+  .quiz-grade.g3{background:var(--grade3-bg);color:var(--grade3);}.quiz-grade.g2{background:var(--grade2-bg);color:var(--grade2);}
+  .quiz-type{font-size:0.78rem;color:var(--text-muted);font-weight:600;padding:0.2rem 0.6rem;border:1px solid var(--border);border-radius:12px;flex-shrink:0;}
+  .quiz-question{font-size:0.95rem;font-weight:600;margin-bottom:1rem;line-height:1.65;}
+  .quiz-choices{list-style:none;display:flex;flex-direction:column;gap:0.5rem;}
+  .quiz-choices li{background:#f8fafc;border:1px solid var(--border);border-radius:7px;padding:0.65rem 1rem;font-size:0.9rem;}
+  .quiz-essay{background:#f8fafc;border:1.5px dashed var(--border);border-radius:7px;padding:1rem;min-height:80px;font-size:0.88rem;color:var(--text-muted);font-style:italic;}
+  footer{background:var(--primary-dark);color:rgba(255,255,255,0.75);text-align:center;padding:2rem;font-size:0.83rem;line-height:1.8;}
+  footer strong{color:#fff;}
+  footer .next-session{display:inline-block;margin-top:0.8rem;background:var(--accent);color:var(--primary-dark);font-weight:700;padding:0.4rem 1.4rem;border-radius:20px;font-size:0.85rem;text-decoration:none;}
+  .step-list { counter-reset: step; list-style: none; padding: 0; }
+  .step-list li { counter-increment: step; display: flex; gap: 1rem; margin-bottom: 0.9rem; font-size:0.93rem; }
+  .step-list li::before { content: counter(step); background: var(--primary); color: #fff; font-weight: 700; font-size: 0.85rem; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 0.1rem; }
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem;}
+  @media(max-width:700px){.two-col{grid-template-columns:1fr;}}
+  @media print{nav{display:none!important;}body{background:#fff;font-size:12pt;}.page-header{background:var(--primary)!important;-webkit-print-color-adjust:exact;print-color-adjust:exact;}.card,.svg-figure,.quiz-item{box-shadow:none;border:1px solid #ddd;}.section{page-break-inside:avoid;}.quiz-item{page-break-inside:avoid;}.rubric-table{page-break-inside:avoid;}footer{page-break-before:always;}@page{margin:20mm;}}
+  @media(max-width:768px){nav{padding:0 1rem;}main{padding:1.5rem 1rem 3rem;}.card{padding:1.2rem;}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" stroke="#e8a020" stroke-width="2"/>
+      <circle cx="14" cy="14" r="8" stroke="rgba(255,255,255,0.5)" stroke-width="1" stroke-dasharray="2 2"/>
+      <circle cx="14" cy="14" r="3" fill="#e8a020"/>
+      <line x1="14" y1="14" x2="22" y2="6" stroke="#e8a020" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="14" y1="1" x2="14" y2="4" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="14" y1="24" x2="14" y2="27" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="1" y1="14" x2="4" y2="14" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="24" y1="14" x2="27" y2="14" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    船舶レーダー教育 | 広島商船高等専門学校
+  </div>
+  <ul class="nav-links">
+    <li><a href="#objectives">到達目標</a></li>
+    <li><a href="#content">学習内容</a></li>
+    <li><a href="#rubric">ルーブリック</a></li>
+    <li><a href="#quiz">確認テスト</a></li>
+  </ul>
+  <span class="nav-session">第9回</span>
+</nav>
+
+<header class="page-header">
+  <div class="header-inner">
+    <div class="header-meta">
+      <span class="badge badge-session">第9回 / 全10回</span>
+      <span class="badge badge-date">2026年6月23日（火）</span>
+      <span class="badge badge-module">モジュール 9：プロッティング演習</span>
+    </div>
+    <h1>演習・シミュレーション①<br>レーダープロッティング</h1>
+    <p class="subtitle">手書きプロッティングの手順・3典型ケース（正面会合・横切り・追い越し）・避航動作判断・デブリーフィング</p>
+  </div>
+</header>
+
+<main>
+
+  <section class="section" id="objectives">
+    <h2 class="section-title">
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></span>
+      到達目標
+    </h2>
+    <div class="objective-grid">
+      <div class="objective-card grade3">
+        <div class="grade-label">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#2e7d32" stroke-width="1.5"/><text x="8" y="12" text-anchor="middle" font-size="9" fill="#2e7d32" font-weight="bold" font-family="sans-serif">3</text></svg>
+          3級 航海士候補生
+        </div>
+        <p>正面会合・横切り・追い越しの単純シナリオで手書きプロッティングを実施し、DCPA・TCPAを求め、COLREGsに基づく基本的な避航判断ができる。</p>
+      </div>
+      <div class="objective-card grade2">
+        <div class="grade-label">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#1565c0" stroke-width="1.5"/><text x="8" y="12" text-anchor="middle" font-size="9" fill="#1565c0" font-weight="bold" font-family="sans-serif">2</text></svg>
+          2級 航海士候補生
+        </div>
+        <p>複雑シナリオで複数船のCPA管理・避航計画を立案し、避航後の相対運動線を確認できる。デブリーフィングで判断根拠を説明し改善点を提示できる。</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="content">
+    <h2 class="section-title">
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></span>
+      学習コンテンツ
+    </h2>
+
+    <!-- 1. プロッティングの手順 -->
+    <div class="card">
+      <h3>1. レーダープロッティングの手順（ステップバイステップ）</h3>
+      <ol class="step-list">
+        <li><strong>第1プロット（O₁）</strong>：他船のエコー位置を方位・距離で読み取り、プロッティングシートに記入する。時刻を記録する。</li>
+        <li><strong>待機（3〜6分）</strong>：十分な時間間隔をおく。短すぎると誤差が大きくなる。</li>
+        <li><strong>第2プロット（O₂）</strong>：同じ他船のエコー位置を再度プロット。時刻を記録する。</li>
+        <li><strong>相対運動線（WO線）の描画</strong>：O₁からO₂へ直線を引く。この線の延長が相対運動線となる。</li>
+        <li><strong>DCPA（最接近距離）の算出</strong>：画面中心（自船）から相対運動線への垂線の長さを測定する。</li>
+        <li><strong>TCPA（最接近時間）の算出</strong>：相対運動線の速さ（スケール）から最接近点までの時間を求める。</li>
+        <li><strong>避航判断</strong>：DCPA・TCPAおよびCOLREGsに基づき、避航動作の要否・内容を判断する。</li>
+        <li><strong>避航後の確認</strong>：針路変更後に再プロットし、新しい相対運動線でDCPAが十分かを確認する。</li>
+      </ol>
+      <div class="info-box">
+        <strong>プロッティングの基本原則：</strong> プロッティングシートの中心が自船位置を表す。相対運動線は「他船が自船から見てどう動くか」を示す。DCPA＝自船位置から相対運動線への最短距離（垂線の長さ）である。
+      </div>
+    </div>
+
+    <!-- SVG図解①: プロッティングシート -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 440" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="440" fill="#f0f4fa" rx="12"/>
+        <text x="410" y="28" fill="#1a3a5c" font-size="14" font-weight="bold" text-anchor="middle">図1：プロッティングシートの使い方（グリッド付き模式図）</text>
+
+        <!-- プロッティングシート（円形） -->
+        <rect x="30" y="45" width="440" height="380" fill="#fff9f0" stroke="#d0dae6" stroke-width="1.5" rx="10"/>
+
+        <!-- グリッド -->
+        <circle cx="250" cy="235" r="170" fill="#fffdf8" stroke="#c8d8e8" stroke-width="0.8"/>
+        <circle cx="250" cy="235" r="130" fill="none" stroke="#c8d8e8" stroke-width="0.6" stroke-dasharray="3 3"/>
+        <circle cx="250" cy="235" r="85" fill="none" stroke="#c8d8e8" stroke-width="0.6" stroke-dasharray="3 3"/>
+        <circle cx="250" cy="235" r="42" fill="none" stroke="#c8d8e8" stroke-width="0.6" stroke-dasharray="3 3"/>
+
+        <!-- 十字線 -->
+        <line x1="80" y1="235" x2="420" y2="235" stroke="#c8d8e8" stroke-width="0.8" stroke-dasharray="2 3"/>
+        <line x1="250" y1="65" x2="250" y2="405" stroke="#c8d8e8" stroke-width="0.8" stroke-dasharray="2 3"/>
+        <!-- 斜め線 -->
+        <line x1="130" y1="115" x2="370" y2="355" stroke="#c8d8e8" stroke-width="0.5" stroke-dasharray="2 3"/>
+        <line x1="370" y1="115" x2="130" y2="355" stroke="#c8d8e8" stroke-width="0.5" stroke-dasharray="2 3"/>
+
+        <!-- 方位ラベル -->
+        <text x="250" y="82" fill="#8899aa" font-size="10" text-anchor="middle" font-weight="bold">N</text>
+        <text x="416" y="239" fill="#8899aa" font-size="10" text-anchor="start" font-weight="bold">E</text>
+        <text x="250" y="416" fill="#8899aa" font-size="10" text-anchor="middle" font-weight="bold">S</text>
+        <text x="76" y="239" fill="#8899aa" font-size="10" text-anchor="end" font-weight="bold">W</text>
+
+        <!-- 自船（中心） -->
+        <circle cx="250" cy="235" r="8" fill="#1a3a5c"/>
+        <polygon points="250,218 243,245 250,238 257,245" fill="#00c880" stroke="#00a060" stroke-width="1"/>
+        <text x="268" y="255" fill="#1a3a5c" font-size="10" font-weight="bold">自船（O）</text>
+
+        <!-- 第1プロット -->
+        <circle cx="250" cy="120" r="6" fill="none" stroke="#e8a020" stroke-width="2"/>
+        <text x="263" y="124" fill="#e8a020" font-size="11" font-weight="bold">O₁</text>
+        <text x="263" y="137" fill="#888" font-size="9">12:00</text>
+
+        <!-- 第2プロット -->
+        <circle cx="256" cy="155" r="6" fill="none" stroke="#c62828" stroke-width="2"/>
+        <text x="269" y="159" fill="#c62828" font-size="11" font-weight="bold">O₂</text>
+        <text x="269" y="172" fill="#888" font-size="9">12:06</text>
+
+        <!-- 相対運動線（WO線の延長） -->
+        <line x1="250" y1="120" x2="270" y2="250" stroke="#1565c0" stroke-width="2" stroke-dasharray="5 2"/>
+        <!-- 延長線 -->
+        <line x1="256" y1="155" x2="275" y2="270" stroke="#1565c0" stroke-width="2"/>
+        <line x1="275" y1="270" x2="288" y2="320" stroke="#1565c0" stroke-width="1.5" stroke-dasharray="4 2"/>
+        <text x="292" y="300" fill="#1565c0" font-size="10" font-weight="bold">相対運動線</text>
+
+        <!-- DCPA（垂線） -->
+        <line x1="250" y1="235" x2="272" y2="272" stroke="#c62828" stroke-width="2" stroke-dasharray="3 2"/>
+        <circle cx="272" cy="272" r="5" fill="none" stroke="#c62828" stroke-width="2"/>
+        <text x="290" y="278" fill="#c62828" font-size="10" font-weight="bold">DCPA</text>
+        <text x="290" y="290" fill="#888" font-size="9">（垂線の長さ）</text>
+
+        <!-- 距離スケール -->
+        <text x="60" y="400" fill="#555" font-size="9">●スケール：1目盛り＝1NM（設定レンジによる）</text>
+
+        <!-- 右パネル：説明 -->
+        <rect x="490" y="45" width="300" height="380" fill="#fff" stroke="#d0dae6" stroke-width="1.5" rx="10"/>
+        <text x="640" y="75" fill="#1a3a5c" font-size="13" font-weight="bold" text-anchor="middle">プロッティングの要点</text>
+
+        <!-- ステップ説明 -->
+        <rect x="505" y="88" width="270" height="35" fill="#e8f5e9" rx="6"/>
+        <text x="640" y="109" fill="#2e7d32" font-size="11" font-weight="bold" text-anchor="middle">STEP 1：O₁を記入（時刻・方位・距離）</text>
+
+        <rect x="505" y="130" width="270" height="35" fill="#fff8e1" rx="6"/>
+        <text x="640" y="151" fill="#e8a020" font-size="11" font-weight="bold" text-anchor="middle">STEP 2：3〜6分待機</text>
+
+        <rect x="505" y="172" width="270" height="35" fill="#fce4ec" rx="6"/>
+        <text x="640" y="193" fill="#c62828" font-size="11" font-weight="bold" text-anchor="middle">STEP 3：O₂を記入（時刻・方位・距離）</text>
+
+        <rect x="505" y="214" width="270" height="35" fill="#e3f2fd" rx="6"/>
+        <text x="640" y="235" fill="#1565c0" font-size="11" font-weight="bold" text-anchor="middle">STEP 4：O₁→O₂の延長線（相対運動線）</text>
+
+        <rect x="505" y="256" width="270" height="35" fill="#e3f2fd" rx="6"/>
+        <text x="640" y="273" fill="#1565c0" font-size="11" font-weight="bold" text-anchor="middle">STEP 5：垂線でDCPAを測定</text>
+
+        <rect x="505" y="298" width="270" height="35" fill="#e3f2fd" rx="6"/>
+        <text x="640" y="315" fill="#1565c0" font-size="11" font-weight="bold" text-anchor="middle">STEP 6：延長線の速さからTCPAを算出</text>
+
+        <rect x="505" y="340" width="270" height="35" fill="#1a3a5c" rx="6"/>
+        <text x="640" y="357" fill="#e8a020" font-size="11" font-weight="bold" text-anchor="middle">STEP 7：避航動作の判断・実施</text>
+
+        <rect x="505" y="382" width="270" height="35" fill="#1a3a5c" rx="6"/>
+        <text x="640" y="399" fill="#fff" font-size="11" font-weight="bold" text-anchor="middle">STEP 8：新しい相対運動線で確認</text>
+      </svg>
+      <figcaption>図1：プロッティングシートの使い方 — O₁・O₂の記入から相対運動線・DCPA算出まで</figcaption>
+    </figure>
+
+    <!-- 2. 3ケースの説明 -->
+    <div class="card">
+      <h3>2. 3典型ケースと避航動作</h3>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem;">
+        <div style="background:#e8f5e9; border-radius:8px; padding:1rem; border-top:3px solid #2e7d32;">
+          <strong style="color:#2e7d32; display:block; margin-bottom:0.5rem;">ケース①：正面会合</strong>
+          <ul style="padding-left:1.2rem; font-size:0.88rem;">
+            <li>両船が正面または近接した方向から接近</li>
+            <li>互いに右転（右への針路変更）が原則（COLREGs規則14）</li>
+            <li>相対運動線が画面中心を向く</li>
+            <li>DCPA≒0、TCPA短い</li>
+          </ul>
+        </div>
+        <div style="background:#e3f2fd; border-radius:8px; padding:1rem; border-top:3px solid #1565c0;">
+          <strong style="color:#1565c0; display:block; margin-bottom:0.5rem;">ケース②：横切り</strong>
+          <ul style="padding-left:1.2rem; font-size:0.88rem;">
+            <li>2船が横切り状況（斜めに接近）</li>
+            <li>他船が右舷側から来る場合は自船が避航（COLREGs規則15）</li>
+            <li>他船が左舷側から来る場合は保持船（状況により）</li>
+            <li>相対運動線の方向で状況を判断</li>
+          </ul>
+        </div>
+        <div style="background:#fff8e1; border-radius:8px; padding:1rem; border-top:3px solid #f57f17;">
+          <strong style="color:#f57f17; display:block; margin-bottom:0.5rem;">ケース③：追い越し</strong>
+          <ul style="padding-left:1.2rem; font-size:0.88rem;">
+            <li>自船が前方の他船を追い越す状況</li>
+            <li>追い越し船が避航義務（COLREGs規則13）</li>
+            <li>前方22.5°以内の他船が追い越し状況</li>
+            <li>十分な距離を保って追い越す</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SVG図解②: 3ケースの相対運動図 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 400" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="400" fill="#f0f4fa" rx="12"/>
+        <text x="410" y="28" fill="#1a3a5c" font-size="14" font-weight="bold" text-anchor="middle">図2：3典型ケースの相対運動図（プロッティング結果）</text>
+
+        <!-- ケース①：正面会合 -->
+        <rect x="15" y="45" width="255" height="340" fill="#fff" stroke="#2e7d32" stroke-width="1.5" rx="8"/>
+        <rect x="15" y="45" width="255" height="30" fill="#2e7d32" rx="8 8 0 0"/>
+        <text x="142" y="66" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">ケース①：正面会合</text>
+        <circle cx="142" cy="230" r="90" fill="#040e1a" stroke="#1a4030" stroke-width="1"/>
+        <circle cx="142" cy="230" r="45" fill="none" stroke="#1a4030" stroke-width="0.7" stroke-dasharray="2 2"/>
+        <!-- 自船 -->
+        <polygon points="142,218 136,240 142,234 148,240" fill="#00e5a0"/>
+        <!-- 他船（北方） -->
+        <circle cx="142" cy="145" r="5" fill="#ff8040"/>
+        <!-- 他船（正面） -->
+        <line x1="142" y1="145" x2="142" y2="300" stroke="#1565c0" stroke-width="2"/>
+        <text x="155" y="165" fill="#1565c0" font-size="10">相対運動線</text>
+        <text x="155" y="178" fill="#1565c0" font-size="10">→ 中心を通過</text>
+        <!-- DCPA→0 -->
+        <text x="158" y="240" fill="#c62828" font-size="10" font-weight="bold">DCPA≈0</text>
+        <!-- 右転矢印 -->
+        <path d="M 142,230 Q 200,200 220,230" fill="none" stroke="#2e7d32" stroke-width="2" stroke-dasharray="5 2" marker-end="url(#arrowGreen9)"/>
+        <text x="200" y="215" fill="#2e7d32" font-size="10" font-weight="bold">右転！</text>
+        <text x="30" y="370" fill="#2e7d32" font-size="10">COLREGs 規則14</text>
+        <text x="30" y="383" fill="#555" font-size="9">→ 互いに右転する</text>
+
+        <!-- ケース②：横切り -->
+        <rect x="283" y="45" width="255" height="340" fill="#fff" stroke="#1565c0" stroke-width="1.5" rx="8"/>
+        <rect x="283" y="45" width="255" height="30" fill="#1565c0" rx="8 8 0 0"/>
+        <text x="410" y="66" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">ケース②：横切り</text>
+        <circle cx="410" cy="230" r="90" fill="#040e1a" stroke="#1a4030" stroke-width="1"/>
+        <circle cx="410" cy="230" r="45" fill="none" stroke="#1a4030" stroke-width="0.7" stroke-dasharray="2 2"/>
+        <!-- 自船 -->
+        <polygon points="410,218 404,240 410,234 416,240" fill="#00e5a0"/>
+        <!-- 他船（右舷側） -->
+        <circle cx="480" cy="155" r="5" fill="#ff8040"/>
+        <!-- 相対運動線（左下方向） -->
+        <line x1="480" y1="155" x2="365" y2="285" stroke="#1565c0" stroke-width="2"/>
+        <text x="390" y="155" fill="#1565c0" font-size="10">相対運動線</text>
+        <!-- DCPA -->
+        <line x1="410" y1="230" x2="422" y2="215" stroke="#c62828" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <circle cx="422" cy="215" r="4" fill="none" stroke="#c62828" stroke-width="2"/>
+        <text x="430" y="213" fill="#c62828" font-size="9">DCPA小</text>
+        <!-- 避航（右転） -->
+        <path d="M 410,230 Q 460,215 475,240" fill="none" stroke="#ff8800" stroke-width="2" stroke-dasharray="5 2" marker-end="url(#arrowOrange9)"/>
+        <text x="452" y="215" fill="#ff8800" font-size="10" font-weight="bold">右転</text>
+        <text x="295" y="370" fill="#1565c0" font-size="10">COLREGs 規則15</text>
+        <text x="295" y="383" fill="#555" font-size="9">→ 右舷から来る船を避ける</text>
+
+        <!-- ケース③：追い越し -->
+        <rect x="551" y="45" width="255" height="340" fill="#fff" stroke="#f57f17" stroke-width="1.5" rx="8"/>
+        <rect x="551" y="45" width="255" height="30" fill="#f57f17" rx="8 8 0 0"/>
+        <text x="678" y="66" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">ケース③：追い越し</text>
+        <circle cx="678" cy="230" r="90" fill="#040e1a" stroke="#1a4030" stroke-width="1"/>
+        <circle cx="678" cy="230" r="45" fill="none" stroke="#1a4030" stroke-width="0.7" stroke-dasharray="2 2"/>
+        <!-- 自船 -->
+        <polygon points="678,218 672,240 678,234 684,240" fill="#00e5a0"/>
+        <!-- 他船（正面遠方） -->
+        <circle cx="678" cy="148" r="5" fill="#ff8040"/>
+        <!-- 相対運動線（前方を通過） -->
+        <line x1="678" y1="148" x2="638" y2="250" stroke="#f57f17" stroke-width="2"/>
+        <text x="620" y="155" fill="#f57f17" font-size="10">相対運動線</text>
+        <text x="620" y="168" fill="#f57f17" font-size="10">（右を通過）</text>
+        <!-- DCPA -->
+        <line x1="678" y1="230" x2="658" y2="198" stroke="#c62828" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <circle cx="658" cy="198" r="4" fill="none" stroke="#c62828" stroke-width="2"/>
+        <text x="660" y="195" fill="#c62828" font-size="9">DCPA</text>
+        <!-- 22.5°ゾーン -->
+        <path d="M 678,148 L 700,148 A 20,20 0 0,0 690,130" fill="rgba(245,127,23,0.15)" stroke="none"/>
+        <text x="695" y="145" fill="#f57f17" font-size="9">22.5°</text>
+        <text x="563" y="370" fill="#f57f17" font-size="10">COLREGs 規則13</text>
+        <text x="563" y="383" fill="#555" font-size="9">→ 追い越し船が全面避航</text>
+
+        <defs>
+          <marker id="arrowGreen9" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#2e7d32"/></marker>
+          <marker id="arrowOrange9" markerWidth="7" markerHeight="5" refX="5" refY="2.5" orient="auto"><polygon points="0 0,7 2.5,0 5" fill="#ff8800"/></marker>
+        </defs>
+      </svg>
+      <figcaption>図2：3典型ケースの相対運動図 — 正面会合（左）・横切り（中）・追い越し（右）とそれぞれの避航動作</figcaption>
+    </figure>
+
+    <!-- SVG図解③: 避航後の新相対運動線 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 380" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="380" fill="#f0f4fa" rx="12"/>
+        <text x="410" y="28" fill="#1a3a5c" font-size="14" font-weight="bold" text-anchor="middle">図3：避航動作後の新相対運動線の確認</text>
+
+        <!-- 変針前の状況（左パネル） -->
+        <rect x="20" y="45" width="370" height="315" fill="#fff" stroke="#c62828" stroke-width="1.5" rx="8"/>
+        <rect x="20" y="45" width="370" height="28" fill="#c62828" rx="8 8 0 0"/>
+        <text x="205" y="64" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">変針前：危険な相対運動線</text>
+        <circle cx="205" cy="205" r="110" fill="#040e1a" stroke="#1a4030" stroke-width="1"/>
+        <circle cx="205" cy="205" r="55" fill="none" stroke="#1a4030" stroke-width="0.7" stroke-dasharray="2 2"/>
+        <!-- 自船 -->
+        <polygon points="205,193 199,215 205,208 211,215" fill="#00e5a0"/>
+        <!-- 他船 -->
+        <circle cx="250" cy="115" r="6" fill="#ff6040" stroke="#ff8040" stroke-width="2"/>
+        <!-- 危険な相対運動線（自船位置に近い） -->
+        <line x1="250" y1="115" x2="175" y2="260" stroke="#c62828" stroke-width="2.5"/>
+        <!-- CPA点（危険） -->
+        <circle cx="198" cy="200" r="8" fill="none" stroke="#ff2222" stroke-width="2.5"/>
+        <text x="214" y="200" fill="#ff2222" font-size="10" font-weight="bold">CPA危険！</text>
+        <text x="225" y="212" fill="#ff2222" font-size="9">DCPA≈0.1NM</text>
+        <!-- 凡例 -->
+        <text x="35" y="340" fill="#555" font-size="10">● 他船の現在位置　○ 最接近点（CPA）</text>
+        <text x="35" y="354" fill="#c62828" font-size="10" font-weight="bold">→ 回避が必要！</text>
+
+        <!-- 矢印（変針実施） -->
+        <rect x="395" y="185" width="30" height="30" fill="var(--accent)" rx="5"/>
+        <text x="410" y="204" fill="#1a3a5c" font-size="16" text-anchor="middle" font-weight="bold">▶</text>
+        <text x="410" y="228" fill="var(--accent)" font-size="10" text-anchor="middle" font-weight="bold">右転</text>
+        <text x="410" y="240" fill="var(--accent)" font-size="10" text-anchor="middle">+30°</text>
+
+        <!-- 変針後の状況（右パネル） -->
+        <rect x="430" y="45" width="370" height="315" fill="#fff" stroke="#2e7d32" stroke-width="1.5" rx="8"/>
+        <rect x="430" y="45" width="370" height="28" fill="#2e7d32" rx="8 8 0 0"/>
+        <text x="615" y="64" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">変針後：安全な新相対運動線</text>
+        <circle cx="615" cy="205" r="110" fill="#040e1a" stroke="#1a4030" stroke-width="1"/>
+        <circle cx="615" cy="205" r="55" fill="none" stroke="#1a4030" stroke-width="0.7" stroke-dasharray="2 2"/>
+        <!-- 自船（変針後の向き） -->
+        <polygon points="619,193 612,215 619,208 626,215" fill="#00e5a0"/>
+        <!-- 他船（変わらず） -->
+        <circle cx="660" cy="115" r="6" fill="#ff6040" stroke="#ff8040" stroke-width="2"/>
+        <!-- 旧相対運動線（薄い） -->
+        <line x1="660" y1="115" x2="585" y2="260" stroke="#c62828" stroke-width="1" stroke-dasharray="4 3" opacity="0.4"/>
+        <!-- 新相対運動線（安全） -->
+        <line x1="660" y1="115" x2="520" y2="245" stroke="#2e7d32" stroke-width="2.5"/>
+        <!-- 新CPA点（安全） -->
+        <circle cx="555" cy="220" r="8" fill="none" stroke="#2e7d32" stroke-width="2"/>
+        <text x="540" y="248" fill="#2e7d32" font-size="10" font-weight="bold">新CPA</text>
+        <text x="540" y="260" fill="#2e7d32" font-size="9">DCPA≈1.5NM</text>
+        <!-- DCPA垂線 -->
+        <line x1="615" y1="205" x2="555" y2="220" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="3 2"/>
+
+        <!-- 安全確認ゾーン -->
+        <text x="445" y="340" fill="#2e7d32" font-size="10" font-weight="bold">✓ 十分な安全距離を確保</text>
+        <text x="445" y="354" fill="#555" font-size="9">変針後も継続してプロッティングで確認！</text>
+      </svg>
+      <figcaption>図3：避航動作（右転30°）後の新相対運動線の確認 — 変針前（危険）と変針後（安全）のDCPA比較</figcaption>
+    </figure>
+
+    <!-- 4. デブリーフィング -->
+    <div class="card">
+      <h3>4. デブリーフィング（振り返り）の目的と方法</h3>
+      <p>デブリーフィングは演習後に体系的に振り返りを行い、学習を深化させる重要なプロセスである。</p>
+      <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:0.8rem; margin-top:0.8rem;">
+        <div style="background:#e8f5e9; border-radius:8px; padding:0.9rem;">
+          <strong style="color:#2e7d32; font-size:0.9rem;">① 判断プロセスの確認</strong>
+          <p style="font-size:0.85rem; margin-top:0.4rem;">なぜその避航動作を選んだか、その根拠（DCPA値・COLREGs条文）を説明する</p>
+        </div>
+        <div style="background:#e3f2fd; border-radius:8px; padding:0.9rem;">
+          <strong style="color:#1565c0; font-size:0.9rem;">② 誤りのパターン認識</strong>
+          <p style="font-size:0.85rem; margin-top:0.4rem;">プロッティング誤差・計算ミス・判断遅延など、どこで間違えたかを特定する</p>
+        </div>
+        <div style="background:#fff8e1; border-radius:8px; padding:0.9rem;">
+          <strong style="color:#e8a020; font-size:0.9rem;">③ 改善点の具体化</strong>
+          <p style="font-size:0.85rem; margin-top:0.4rem;">「次回はこうする」という具体的な改善行動を言語化し、定着を図る</p>
+        </div>
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ルーブリック -->
+  <section class="section" id="rubric">
+    <h2 class="section-title">
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zM5 3H3v18l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V3H5zm12 14H7V5h10v12z"/></svg></span>
+      評価ルーブリック（4段階）
+    </h2>
+    <div class="rubric-wrap">
+      <table class="rubric-table">
+        <thead>
+          <tr>
+            <th>評価観点</th>
+            <th><span class="score-badge badge-4">4</span><br>優秀</th>
+            <th><span class="score-badge badge-3">3</span><br>良</th>
+            <th><span class="score-badge badge-2">2</span><br>可</th>
+            <th><span class="score-badge badge-1">1</span><br>不可</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>プロッティング<br>技術</td>
+            <td class="score-4">正確なプロットから相対運動線・DCPA/TCPAを求め、避航後の確認まで行える</td>
+            <td class="score-3">正確なプロットから相対運動線・DCPA/TCPAを求められる</td>
+            <td class="score-2">相対運動線を描けるが誤差が大きい</td>
+            <td class="score-1">プロットできない</td>
+          </tr>
+          <tr>
+            <td>3ケースの<br>判断</td>
+            <td class="score-4">3ケース全てで会合状況を正確に判断し、COLREGsに沿った避航を説明できる</td>
+            <td class="score-3">2ケースを正確に判断できる</td>
+            <td class="score-2">1ケースを正確に判断できる</td>
+            <td class="score-1">判断できない</td>
+          </tr>
+          <tr>
+            <td>デブリーフィング<br>への貢献</td>
+            <td class="score-4">自身の判断根拠を明確に説明し、改善点を具体的に提示できる</td>
+            <td class="score-3">判断根拠を説明でき、改善点を述べられる</td>
+            <td class="score-2">演習の振り返りに参加できる</td>
+            <td class="score-1">参加が不十分</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 確認テスト -->
+  <section class="section" id="quiz">
+    <h2 class="section-title">
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></span>
+      確認テスト（解答なし）
+    </h2>
+
+    <div class="quiz-item">
+      <div class="quiz-header">
+        <span class="quiz-num">問題 1</span>
+        <span class="quiz-grade g3">3級</span>
+        <span class="quiz-type">択一式</span>
+      </div>
+      <p class="quiz-question">プロッティングで求めた相対運動線のDCPA（最接近距離）を確認する方法として正しいものはどれか。</p>
+      <ul class="quiz-choices">
+        <li>ア．相対運動線の長さを測る</li>
+        <li>イ．画面中心から相対運動線への垂線の長さを求める</li>
+        <li>ウ．自船と他船の現在距離を測る</li>
+        <li>エ．TCPAから逆算する</li>
+      </ul>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-header">
+        <span class="quiz-num">問題 2</span>
+        <span class="quiz-grade g3">3級</span>
+        <span class="quiz-type">記述式</span>
+      </div>
+      <p class="quiz-question">レーダープロッティングを行う手順を4ステップで説明しなさい。</p>
+      <div class="quiz-essay">（解答欄）</div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-header">
+        <span class="quiz-num">問題 3</span>
+        <span class="quiz-grade g2">2級</span>
+        <span class="quiz-type">記述式</span>
+      </div>
+      <p class="quiz-question">演習後のデブリーフィング（振り返り）で扱うべき主要な観点を3つ挙げ、それぞれの目的を説明しなさい。</p>
+      <div class="quiz-essay">（解答欄）</div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-header">
+        <span class="quiz-num">問題 4</span>
+        <span class="quiz-grade g2">2級</span>
+        <span class="quiz-type">記述式</span>
+      </div>
+      <p class="quiz-question">正横横切り状況で相手船との衝突のおそれがある場合、海上衝突予防法の趣旨を踏まえた避航動作を説明しなさい。</p>
+      <div class="quiz-essay">（解答欄）</div>
+    </div>
+
+  </section>
+
+</main>
+
+<footer>
+  <strong>広島商船高等専門学校</strong><br>
+  船舶レーダー教育カリキュラム ｜ 第9回 / 全10回<br>
+  対象：3級・2級航海士候補生（高専・海技大学）<br>
+  <a class="next-session" href="session10.html">▶ 次回：第10回 演習・シミュレーション②（多船会合・総合演習）（2026年6月30日）</a>
+</footer>
+
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  var scrollRaf=0;
+  function emitScroll(){
+    scrollRaf=0;
+    var x=window.scrollX||window.pageXOffset||0;
+    var y=window.scrollY||window.pageYOffset||0;
+    window.parent.postMessage({type:'INLINE_EDIT_SCROLL',scrollX:x,scrollY:y},'*');
+  }
+  window.addEventListener('scroll',function(){
+    if(scrollRaf)return;
+    scrollRaf=requestAnimationFrame(emitScroll);
+  },{passive:true,capture:true});
+  emitScroll();
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>

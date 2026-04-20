@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第3回 操作・調整と偽像 | 船舶レーダー教育</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a3a5c;--primary-light: #2a5a8c;--accent: #e8a020;--accent-dark: #c4841a;
+    --bg: #f4f6f9;--card-bg: #ffffff;--text: #2c3e50;--text-light: #566573;
+    --grade3: #2e7d32;--grade3-bg: #e8f5e9;--grade2: #1565c0;--grade2-bg: #e3f2fd;
+    --border: #d1dce8;--shadow: 0 2px 12px rgba(26,58,92,0.10);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans JP', 'Noto Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.7; }
+  nav { background: var(--primary); color: #fff; padding: 0 2rem; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  .nav-brand { font-size: 1rem; font-weight: 700; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.6rem; }
+  .nav-session { background: var(--accent); color: var(--primary); font-weight: 700; font-size: 0.85rem; padding: 0.25rem 0.9rem; border-radius: 20px; }
+  .page-header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff; padding: 3rem 2rem 2.5rem; position: relative; overflow: hidden; }
+  .page-header::after { content: ''; position: absolute; right: -60px; bottom: -60px; width: 280px; height: 280px; border-radius: 50%; background: rgba(232,160,32,0.12); }
+  .header-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+  .header-meta { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.8rem; font-size: 0.82rem; opacity: 0.85; }
+  .header-meta span { background: rgba(255,255,255,0.15); padding: 0.2rem 0.7rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); }
+  .header-meta .accent-tag { background: var(--accent); color: var(--primary); border-color: transparent; font-weight: 700; }
+  .page-header h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; line-height: 1.3; margin-bottom: 0.6rem; }
+  .page-header p.subtitle { font-size: 1rem; opacity: 0.85; max-width: 700px; }
+  .main-content { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+  .section-title { font-size: 1.3rem; font-weight: 700; color: var(--primary); margin-bottom: 1.2rem; padding-bottom: 0.5rem; border-bottom: 3px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+  .section-title .icon { background: var(--primary); color: #fff; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; flex-shrink: 0; }
+  section.content-section { margin-bottom: 3rem; }
+  .objective-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  @media (max-width: 700px) { .objective-grid { grid-template-columns: 1fr; } }
+  .objective-card { background: var(--card-bg); border-radius: 10px; padding: 1.4rem 1.6rem; box-shadow: var(--shadow); border-top: 4px solid; }
+  .objective-card.grade3 { border-color: var(--grade3); }
+  .objective-card.grade2 { border-color: var(--grade2); }
+  .grade-label { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.18rem 0.7rem; border-radius: 4px; display: inline-block; margin-bottom: 0.8rem; }
+  .grade3 .grade-label { background: var(--grade3-bg); color: var(--grade3); }
+  .grade2 .grade-label { background: var(--grade2-bg); color: var(--grade2); }
+  .objective-card p { font-size: 0.93rem; line-height: 1.75; }
+  .content-card { background: var(--card-bg); border-radius: 10px; padding: 1.8rem 2rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
+  .content-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 1rem; padding-left: 0.8rem; border-left: 3px solid var(--accent); }
+  .content-card p { margin-bottom: 0.8rem; font-size: 0.93rem; }
+  .content-card p:last-child { margin-bottom: 0; }
+  .table-wrapper { overflow-x: auto; margin: 1rem 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  thead tr { background: var(--primary); color: #fff; }
+  thead th { padding: 0.75rem 1rem; text-align: left; font-weight: 600; font-size: 0.85rem; }
+  tbody tr:nth-child(even) { background: #f0f4f8; }
+  tbody td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody td:first-child { font-weight: 600; color: var(--primary); }
+  .svg-figure { background: var(--card-bg); border-radius: 10px; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
+  .svg-figure figcaption { text-align: center; font-size: 0.82rem; color: var(--text-light); margin-top: 0.8rem; font-style: italic; }
+  .svg-figure svg { width: 100%; height: auto; display: block; }
+  .level-badge { display: inline-block; padding: 0.15rem 0.55rem; border-radius: 12px; font-weight: 700; font-size: 0.8rem; margin-bottom: 0.3rem; }
+  .b4 { background: #ffd54f; color: #5d4037; } .b3 { background: #81c784; color: #1b5e20; }
+  .b2 { background: #64b5f6; color: #0d47a1; } .b1 { background: #ef9a9a; color: #b71c1c; }
+  .level-4 { background: #fff8e1; } .level-3 { background: #e8f5e9; }
+  .level-2 { background: #e3f2fd; } .level-1 { background: #fce4ec; }
+  .rubric-table thead th:first-child { width: 22%; }
+  .rubric-table thead th:not(:first-child) { width: 19.5%; text-align: center; }
+  .rubric-table td:not(:first-child) { text-align: center; font-size: 0.82rem; }
+  .test-section { margin-bottom: 3rem; }
+  .test-question { background: var(--card-bg); border-radius: 10px; padding: 1.5rem 1.8rem; box-shadow: var(--shadow); margin-bottom: 1.2rem; border-left: 4px solid var(--accent); }
+  .test-question .q-header { display: flex; gap: 0.7rem; align-items: flex-start; margin-bottom: 0.8rem; }
+  .q-num { background: var(--primary); color: #fff; font-weight: 700; font-size: 0.82rem; padding: 0.2rem 0.65rem; border-radius: 5px; white-space: nowrap; flex-shrink: 0; }
+  .q-level { font-size: 0.78rem; font-weight: 700; padding: 0.2rem 0.65rem; border-radius: 5px; white-space: nowrap; flex-shrink: 0; }
+  .q-level.g3 { background: var(--grade3-bg); color: var(--grade3); }
+  .q-level.g2 { background: var(--grade2-bg); color: var(--grade2); }
+  .q-type { font-size: 0.78rem; color: var(--text-light); padding: 0.2rem 0.5rem; background: var(--bg); border-radius: 5px; flex-shrink: 0; }
+  .test-question p { font-size: 0.93rem; margin-bottom: 0.6rem; }
+  .choices { list-style: none; padding-left: 0.5rem; }
+  .choices li { padding: 0.35rem 0.8rem; border-radius: 5px; margin-bottom: 0.25rem; font-size: 0.9rem; background: var(--bg); border: 1px solid var(--border); }
+  footer { background: var(--primary); color: rgba(255,255,255,0.8); text-align: center; padding: 2rem 1.5rem; font-size: 0.85rem; line-height: 1.8; }
+  footer strong { color: #fff; }
+  .next-session { display: inline-block; background: var(--accent); color: var(--primary); font-weight: 700; padding: 0.3rem 1rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.9rem; }
+  .highlight-box { background: #fff8e1; border-left: 4px solid var(--accent); padding: 0.9rem 1.2rem; border-radius: 0 8px 8px 0; margin: 1rem 0; font-size: 0.9rem; }
+  .info-box { background: #e8f0fc; border: 1px solid #b3c8ec; border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; }
+  .info-box .info-label { font-weight: 700; color: var(--grade2); margin-bottom: 0.3rem; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  .warning-box { background: #fff3e0; border-left: 4px solid #e65100; padding: 0.9rem 1.2rem; border-radius: 0 8px 8px 0; margin: 1rem 0; font-size: 0.9rem; }
+  ul.bullet-list { padding-left: 1.4rem; margin: 0.6rem 0; }
+  ul.bullet-list li { margin-bottom: 0.4rem; font-size: 0.92rem; }
+  @media print {
+    nav { display: none !important; }
+    body { background: #fff; font-size: 12pt; }
+    .page-header { background: var(--primary) !important; -webkit-print-color-adjust: exact; }
+    .content-card, .svg-figure, .test-question { box-shadow: none; border: 1px solid #ccc; }
+    section.content-section { page-break-inside: avoid; }
+    .test-section { page-break-before: always; }
+    @page { margin: 20mm 15mm; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+      <circle cx="14" cy="14" r="12" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+      <circle cx="14" cy="14" r="7" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+      <circle cx="14" cy="14" r="2" fill="#e8a020"/>
+      <line x1="14" y1="14" x2="24" y2="6" stroke="#e8a020" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    船舶レーダー教育 | 広島商船高等専門学校
+  </div>
+  <div class="nav-session">第3回 / 全5回</div>
+</nav>
+
+<div class="page-header">
+  <div class="header-inner">
+    <div class="header-meta">
+      <span class="accent-tag">Module 03</span>
+      <span>2026年5月12日（火）</span>
+      <span>対象：3級・2級航海士候補生</span>
+      <span>広島商船高等専門学校</span>
+    </div>
+    <h1>操作・調整と偽像</h1>
+    <p class="subtitle">ゲイン・STC・FTCの各調整と海面・雨雪クラッターへの対処、ブラインドセクター・サイドローブ・セカンドトレースなど代表的な偽像の識別と対応方法を学ぶ。</p>
+  </div>
+</div>
+
+<div class="main-content">
+
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">目</span>到達目標</h2>
+    <div class="objective-grid">
+      <div class="objective-card grade3">
+        <div class="grade-label">3級航海士候補生</div>
+        <p>基本的なゲイン・STC・FTC調整により有効な映像を得られる。代表的な偽像（ブラインドセクター・サイドローブ・セカンドトレース）を画面上で識別し、発生原因を説明できる。</p>
+      </div>
+      <div class="objective-card grade2">
+        <div class="grade-label">2級航海士候補生</div>
+        <p>気象・海象条件に応じた調整・アンテナ選択・偽像判別を組み合わせた総合的な運用ができる。固体化レーダーの調整特性と優位性を実運用の観点から説明できる。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ゲイン・STC・FTC -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">１</span>ゲイン・STC・FTC の調整</h2>
+    <div class="content-card">
+      <h3>各調整の役割と注意点</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>調整項目</th><th>役割</th><th>調整しすぎた場合のリスク</th><th>調整不足の場合</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ゲイン（GAIN）</td>
+              <td>受信感度全体を調整。エコーの強さを変える</td>
+              <td>ノイズが画面全体に広がり物標が埋もれる</td>
+              <td>小物標・弱エコーが表示されない</td>
+            </tr>
+            <tr>
+              <td>STC（海面クラッター抑制）</td>
+              <td>自船近傍の海面クラッターを抑制（近距離ゲインを低下）</td>
+              <td><strong class="text-danger">近傍の小物標（小型船・漁船等）を見落とす危険</strong></td>
+              <td>自船周辺がクラッターで埋まり近傍物標を見落とす</td>
+            </tr>
+            <tr>
+              <td>FTC（雨雪クラッター抑制）</td>
+              <td>急激な信号変化を検出し、ぼやけた雨雪クラッターを除去（微分回路的処理）</td>
+              <td>遠距離の弱い本物エコーが消える可能性</td>
+              <td>降雨域内の物標が雨クラッターに埋もれる</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="warning-box">
+        <strong>⚠ STC過剰調整の危険：</strong> STC は近距離（一般に3〜5 nm以内）のゲインを抑制するため、小型船・ヨット・漁船のように反射強度が弱い物標を完全に消してしまうことがある。定期的にSTCを下げて近傍を再確認する習慣が重要。
+      </div>
+    </div>
+
+    <!-- SVG: ゲイン・STC・FTC調整効果比較図 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 380" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="380" fill="#f8fafc" rx="8"/>
+        <text x="410" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1a3a5c">ゲイン・STC・FTC 調整効果の比較（PPI模式図）</text>
+
+        <!-- Panel 1: Normal (correct adjustment) -->
+        <rect x="30" y="45" width="230" height="230" rx="6" fill="#0a1520"/>
+        <text x="145" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#2e7d32">① 適正調整</text>
+        <circle cx="145" cy="160" r="100" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="145" cy="160" r="67" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="145" cy="160" r="33" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <!-- Own ship -->
+        <polygon points="145,153 140,168 145,164 150,168" fill="#e8a020"/>
+        <!-- Heading line -->
+        <line x1="145" y1="160" x2="145" y2="58" stroke="#e8a020" stroke-width="1"/>
+        <!-- Normal small clutter (only close) -->
+        <circle cx="147" cy="148" r="3" fill="rgba(0,229,255,0.3)"/>
+        <circle cx="142" cy="153" r="2" fill="rgba(0,229,255,0.3)"/>
+        <!-- Good targets -->
+        <circle cx="175" cy="110" r="4" fill="#00e5ff"/>
+        <circle cx="110" cy="120" r="3" fill="#00e5ff"/>
+        <circle cx="190" cy="155" r="5" fill="#00e5ff"/>
+        <text x="145" y="292" text-anchor="middle" font-size="11" fill="#2e7d32">クラッター最小、物標明瞭</text>
+
+        <!-- Panel 2: Gain too high -->
+        <rect x="295" y="45" width="230" height="230" rx="6" fill="#0a1520"/>
+        <text x="410" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#c62828">② ゲイン過大</text>
+        <circle cx="410" cy="160" r="100" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="410" cy="160" r="67" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="410" cy="160" r="33" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <polygon points="410,153 405,168 410,164 415,168" fill="#e8a020"/>
+        <line x1="410" y1="160" x2="410" y2="58" stroke="#e8a020" stroke-width="1"/>
+        <!-- Noise everywhere -->
+        <circle cx="410" cy="130" r="28" fill="rgba(255,100,100,0.25)"/>
+        <circle cx="380" cy="155" r="22" fill="rgba(255,100,100,0.2)"/>
+        <circle cx="430" cy="170" r="18" fill="rgba(255,100,100,0.2)"/>
+        <circle cx="400" cy="110" r="15" fill="rgba(255,100,100,0.15)"/>
+        <!-- Scattered noise dots -->
+        <circle cx="375" cy="120" r="2" fill="rgba(255,200,200,0.7)"/>
+        <circle cx="445" cy="140" r="2" fill="rgba(255,200,200,0.7)"/>
+        <circle cx="390" cy="185" r="2" fill="rgba(255,200,200,0.7)"/>
+        <circle cx="425" cy="115" r="2" fill="rgba(255,200,200,0.7)"/>
+        <text x="410" y="292" text-anchor="middle" font-size="11" fill="#c62828">ノイズ全体に広がり物標不明瞭</text>
+
+        <!-- Panel 3: STC too high -->
+        <rect x="560" y="45" width="230" height="230" rx="6" fill="#0a1520"/>
+        <text x="675" y="40" text-anchor="middle" font-size="12" font-weight="700" fill="#e65100">③ STC過大</text>
+        <circle cx="675" cy="160" r="100" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="675" cy="160" r="67" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="675" cy="160" r="33" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <polygon points="675,153 670,168 675,164 680,168" fill="#e8a020"/>
+        <line x1="675" y1="160" x2="675" y2="58" stroke="#e8a020" stroke-width="1"/>
+        <!-- STC zone (inner ring suppressed) -->
+        <circle cx="675" cy="160" r="45" fill="rgba(255,150,0,0.12)" stroke="#ff9800" stroke-width="1" stroke-dasharray="4,2"/>
+        <!-- Close target MISSING (grayed out) -->
+        <circle cx="680" cy="140" r="4" fill="rgba(255,255,255,0.1)" stroke="rgba(255,255,255,0.2)" stroke-width="1"/>
+        <text x="691" y="136" font-size="8" fill="rgba(255,80,80,0.7)">消滅</text>
+        <!-- Far target still visible -->
+        <circle cx="720" cy="125" r="4" fill="#00e5ff"/>
+        <circle cx="640" cy="105" r="3" fill="#00e5ff"/>
+        <!-- STC zone label -->
+        <text x="675" y="175" text-anchor="middle" font-size="9" fill="#ff9800">STC抑制域</text>
+        <text x="675" y="292" text-anchor="middle" font-size="11" fill="#e65100">近距離小物標が消える危険！</text>
+
+        <!-- Bottom labels -->
+        <text x="145" y="315" text-anchor="middle" font-size="10" fill="#555">ゲイン：適正値に調整</text>
+        <text x="145" y="330" text-anchor="middle" font-size="10" fill="#555">STC：近傍クラッターを軽減</text>
+        <text x="410" y="315" text-anchor="middle" font-size="10" fill="#555">ゲインを上げすぎると</text>
+        <text x="410" y="330" text-anchor="middle" font-size="10" fill="#555">受信ノイズが増大</text>
+        <text x="675" y="315" text-anchor="middle" font-size="10" fill="#555">STCを上げすぎると</text>
+        <text x="675" y="330" text-anchor="middle" font-size="10" fill="#555">近傍の小型船が消える</text>
+
+        <!-- FTC note -->
+        <rect x="30" y="345" width="760" height="30" rx="6" fill="#e8f0fc"/>
+        <text x="410" y="364" text-anchor="middle" font-size="11" fill="#1565c0">FTC（雨雪クラッター抑制）：降雨域の広がったエコーを除去。適正値以上に上げると遠距離の本物エコーも消える可能性があるため、過剰使用に注意。</text>
+      </svg>
+      <figcaption>図3-1　ゲイン・STC 調整効果の比較（PPI模式図）。① 適正調整では物標が明瞭に表示される。② ゲイン過大ではノイズが全体に広がる。③ STC過大では近傍小物標が消える危険がある。</figcaption>
+    </figure>
+  </section>
+
+  <!-- 偽像 -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">２</span>代表的偽像の発生原因と識別</h2>
+
+    <!-- SVG: ブラインドセクター -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 340" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="340" fill="#f8fafc" rx="8"/>
+        <text x="410" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1a3a5c">ブラインドセクターの発生図</text>
+
+        <!-- Ship profile view -->
+        <!-- Ship hull -->
+        <rect x="130" y="195" width="220" height="50" rx="8" fill="#1a3a5c"/>
+        <polygon points="130,195 120,245 130,245" fill="#1a3a5c"/>
+        <polygon points="350,195 360,245 350,245" fill="#1a3a5c"/>
+        <!-- Superstructure -->
+        <rect x="200" y="155" width="100" height="45" rx="4" fill="#2a5a8c"/>
+        <!-- Mast -->
+        <rect x="238" y="85" width="8" height="75" fill="#5a7a9c"/>
+        <text x="242" y="80" text-anchor="middle" font-size="11" fill="#1a3a5c">マスト</text>
+        <!-- Antenna on mast -->
+        <rect x="225" y="82" width="34" height="5" rx="2" fill="#e8a020"/>
+        <text x="242" y="76" text-anchor="middle" font-size="9" fill="#e8a020">アンテナ</text>
+
+        <!-- Radar beams going forward (blocked by mast) -->
+        <!-- Normal beam paths (left side) -->
+        <line x1="242" y1="84" x2="60" y2="20" stroke="rgba(0,180,255,0.7)" stroke-width="1.5"/>
+        <line x1="242" y1="84" x2="60" y2="60" stroke="rgba(0,180,255,0.7)" stroke-width="1.5"/>
+        <line x1="242" y1="84" x2="60" y2="100" stroke="rgba(0,180,255,0.7)" stroke-width="1.5"/>
+        <line x1="242" y1="84" x2="60" y2="140" stroke="rgba(0,180,255,0.7)" stroke-width="1.5"/>
+        <!-- Normal beam paths (right side) -->
+        <line x1="242" y1="84" x2="420" y2="20" stroke="rgba(0,180,255,0.7)" stroke-width="1.5"/>
+        <line x1="242" y1="84" x2="420" y2="60" stroke="rgba(0,180,255,0.7)" stroke-width="1.5"/>
+        <line x1="242" y1="84" x2="420" y2="100" stroke="rgba(0,180,255,0.7)" stroke-width="1.5"/>
+        <line x1="242" y1="84" x2="420" y2="140" stroke="rgba(0,180,255,0.7)" stroke-width="1.5"/>
+
+        <!-- Blind sector zone (behind superstructure) -->
+        <path d="M242,84 L460,160 L460,250 L460,250 L460,160" fill="rgba(255,0,0,0)" stroke="none"/>
+        <!-- Shadow behind mast going right-stern direction -->
+        <path d="M242,84 L550,160 L550,250 L500,250 Z" fill="rgba(200,0,0,0.1)"/>
+        <path d="M242,84 L480,155 L480,200 L460,200 Z" fill="rgba(200,0,0,0.15)" stroke="red" stroke-width="0.5" stroke-dasharray="3,2"/>
+        <text x="490" y="185" font-size="11" fill="#c62828">ブラインド</text>
+        <text x="490" y="200" font-size="11" fill="#c62828">セクター</text>
+        <text x="490" y="215" font-size="10" fill="#c62828">（死角）</text>
+
+        <!-- Blind sector in PPI view (right side) -->
+        <text x="670" y="45" text-anchor="middle" font-size="13" font-weight="700" fill="#1a3a5c">PPI上の表示</text>
+        <rect x="590" y="55" width="210" height="210" rx="6" fill="#0a1520"/>
+        <circle cx="695" cy="160" r="90" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="695" cy="160" r="60" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="695" cy="160" r="30" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <polygon points="695,152 690,167 695,163 700,167" fill="#e8a020"/>
+        <line x1="695" y1="160" x2="695" y2="68" stroke="#e8a020" stroke-width="1.5"/>
+        <!-- Blind sector wedge on PPI (example: stern-right quadrant ≈ 135°-180°) -->
+        <path d="M695,160 L760,220 L750,260 L695,260 L695,160" fill="rgba(200,0,0,0.2)" stroke="#c62828" stroke-width="1" stroke-dasharray="4,2"/>
+        <text x="740" y="245" font-size="9" fill="#c62828">死角</text>
+        <!-- Normal echo is not visible in blind sector -->
+        <circle cx="745" cy="210" r="3" fill="rgba(255,255,255,0.2)" stroke="rgba(255,100,100,0.5)" stroke-width="1"/>
+        <text x="758" y="208" font-size="8" fill="rgba(255,100,100,0.7)">消滅</text>
+        <!-- Normal echoes outside blind sector -->
+        <circle cx="665" cy="105" r="4" fill="#00e5ff"/>
+        <circle cx="730" cy="100" r="3" fill="#00e5ff"/>
+
+        <!-- Annotation -->
+        <text x="410" y="305" text-anchor="middle" font-size="11" fill="#555">マスト・煙突などの構造物がアンテナビームを遮ることで、その背後に死角（ブラインドセクター）が生じる。</text>
+        <text x="410" y="322" text-anchor="middle" font-size="11" fill="#c62828">定期的にヘッディングラインを変えて死角内を確認し、目視や他の手段で補完することが重要。</text>
+      </svg>
+      <figcaption>図3-2　ブラインドセクターの発生図（左：側面図、右：PPI表示）。マスト・煙突・クレーン等の構造物がレーダービームを遮ることで、その背後の方位に扇形の死角が生じる。</figcaption>
+    </figure>
+
+    <!-- SVG: サイドローブ偽像 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 360" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="360" fill="#f8fafc" rx="8"/>
+        <text x="410" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1a3a5c">サイドローブ偽像の模式図</text>
+
+        <!-- Left: antenna beam pattern -->
+        <text x="220" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="#1a3a5c">アンテナビームパターン</text>
+        <!-- Main lobe -->
+        <path d="M160,200 Q160,90 220,90 Q280,90 280,200 Z" fill="rgba(0,130,255,0.2)" stroke="#1565c0" stroke-width="2"/>
+        <text x="220" y="155" text-anchor="middle" font-size="11" font-weight="700" fill="#1565c0">主ローブ</text>
+        <text x="220" y="170" text-anchor="middle" font-size="10" fill="#1565c0">（Main Lobe）</text>
+        <!-- Side lobe left -->
+        <path d="M140,200 Q130,175 150,165 Q165,158 175,175 Q185,190 180,200 Z" fill="rgba(255,80,80,0.2)" stroke="#c62828" stroke-width="1.5"/>
+        <text x="148" y="175" text-anchor="middle" font-size="9" fill="#c62828">副ローブ</text>
+        <!-- Side lobe right -->
+        <path d="M300,200 Q310,175 290,165 Q275,158 265,175 Q255,190 260,200 Z" fill="rgba(255,80,80,0.2)" stroke="#c62828" stroke-width="1.5"/>
+        <text x="292" y="175" text-anchor="middle" font-size="9" fill="#c62828">副ローブ</text>
+        <!-- Even smaller side lobes -->
+        <path d="M120,200 Q112,188 120,180 Q128,175 133,183 Q138,193 135,200 Z" fill="rgba(255,80,80,0.1)" stroke="#c62828" stroke-width="1" stroke-dasharray="2,2"/>
+        <path d="M320,200 Q328,188 320,180 Q312,175 307,183 Q302,193 305,200 Z" fill="rgba(255,80,80,0.1)" stroke="#c62828" stroke-width="1" stroke-dasharray="2,2"/>
+
+        <!-- Antenna body -->
+        <rect x="195" y="198" width="50" height="10" rx="3" fill="#1a3a5c"/>
+        <text x="220" y="222" text-anchor="middle" font-size="10" fill="#555">アンテナ</text>
+
+        <!-- Beam width markers -->
+        <line x1="160" y1="200" x2="280" y2="200" stroke="#999" stroke-width="0.5"/>
+
+        <!-- Strong reflector -->
+        <rect x="100" y="160" width="8" height="20" rx="2" fill="#e8a020"/>
+        <text x="104" y="148" text-anchor="middle" font-size="9" fill="#e8a020">強反射</text>
+        <text x="104" y="158" text-anchor="middle" font-size="9" fill="#e8a020">物標</text>
+
+        <!-- Middle: divider -->
+        <line x1="430" y1="40" x2="430" y2="340" stroke="#d1dce8" stroke-width="1.5" stroke-dasharray="6,3"/>
+
+        <!-- Right: PPI display showing false echoes -->
+        <text x="630" y="50" text-anchor="middle" font-size="13" font-weight="700" fill="#1a3a5c">PPIでの偽像表示</text>
+        <rect x="490" y="60" width="280" height="260" rx="6" fill="#0a1520"/>
+        <circle cx="630" cy="190" r="110" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="630" cy="190" r="73" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="630" cy="190" r="37" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <!-- N -->
+        <text x="627" y="73" font-size="12" font-weight="700" fill="#4db6ac">N</text>
+        <line x1="630" y1="75" x2="630" y2="300" stroke="#1a3060" stroke-width="0.5" stroke-dasharray="3,3"/>
+        <line x1="500" y1="190" x2="760" y2="190" stroke="#1a3060" stroke-width="0.5" stroke-dasharray="3,3"/>
+        <!-- Own ship -->
+        <polygon points="630,182 625,197 630,193 635,197" fill="#e8a020"/>
+        <line x1="630" y1="190" x2="630" y2="78" stroke="#e8a020" stroke-width="1.5"/>
+
+        <!-- True target (strong reflector at, say, bearing 330°, 5nm ~ 73px) -->
+        <!-- 330° from N: x=630+73*sin(-30°)=630-36.5=593, y=190-73*cos(30°)=190-63=127 -->
+        <circle cx="593" cy="127" r="6" fill="#00e5ff" stroke="#00bcd4" stroke-width="1"/>
+        <text x="575" y="122" font-size="10" fill="#00e5ff">真エコー</text>
+
+        <!-- False echo from side lobe (same distance, different bearing - typically ±10° to 20° from true) -->
+        <!-- Side lobe echo 1: bearing ~310° (true 330° - ~20°) same distance -->
+        <!-- 310°: x=630+73*sin(-50°)=630-55.9=574, y=190-73*cos(50°)=190-47=143 -->
+        <circle cx="574" cy="143" r="4" fill="rgba(255,80,80,0.6)" stroke="#c62828" stroke-width="1" stroke-dasharray="2,1"/>
+        <text x="556" y="140" font-size="9" fill="#c62828">偽像</text>
+        <!-- Side lobe echo 2: bearing ~350° (true 330° + ~20°) -->
+        <!-- 350°: x=630+73*sin(-10°)=630-12.7=617, y=190-73*cos(10°)=190-71.9=118 -->
+        <circle cx="617" cy="118" r="4" fill="rgba(255,80,80,0.6)" stroke="#c62828" stroke-width="1" stroke-dasharray="2,1"/>
+        <text x="620" y="112" font-size="9" fill="#c62828">偽像</text>
+
+        <!-- Annotation arrows -->
+        <line x1="593" y1="127" x2="575" y2="143" stroke="#888" stroke-width="1" stroke-dasharray="2,1"/>
+        <line x1="593" y1="127" x2="617" y2="118" stroke="#888" stroke-width="1" stroke-dasharray="2,1"/>
+
+        <!-- Bottom text -->
+        <text x="220" y="310" text-anchor="middle" font-size="11" fill="#555">副ローブが強い反射体に当たると</text>
+        <text x="220" y="325" text-anchor="middle" font-size="11" fill="#555">主ローブと同時に強エコーが返る</text>
+        <text x="630" y="340" text-anchor="middle" font-size="11" fill="#c62828">真エコーの両側・同距離に弧状の偽像が現れる</text>
+      </svg>
+      <figcaption>図3-3　サイドローブ偽像の模式図（左：ビームパターン、右：PPI表示）。副ローブ（サイドローブ）が大型船・橋梁など強反射体に当たると、主ローブエコーと同距離・異方位に弧状の偽像が表示される。ゲインを下げると偽像は消え、真エコーは残る。</figcaption>
+    </figure>
+
+    <!-- SVG: セカンドトレース偽像 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 300" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="300" fill="#f8fafc" rx="8"/>
+        <text x="410" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1a3a5c">セカンドトレース偽像の説明図</text>
+
+        <!-- Timeline diagram -->
+        <!-- Time axis -->
+        <line x1="40" y1="90" x2="790" y2="90" stroke="#1a3a5c" stroke-width="2"/>
+        <text x="800" y="95" font-size="11" fill="#1a3a5c">時間→</text>
+
+        <!-- Pulse 1 -->
+        <rect x="40" y="58" width="15" height="35" fill="#1565c0" rx="2"/>
+        <text x="47" y="52" text-anchor="middle" font-size="10" fill="#1565c0">P1送信</text>
+
+        <!-- Pulse 1 maximum detection range (PRI/2) -->
+        <line x1="40" y1="100" x2="380" y2="100" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <line x1="380" y1="95" x2="380" y2="105" stroke="#2e7d32" stroke-width="1.5"/>
+        <text x="210" y="115" text-anchor="middle" font-size="11" fill="#2e7d32">PRI/2 = 最大探知距離 Rmax</text>
+
+        <!-- Pulse 2 -->
+        <rect x="380" y="58" width="15" height="35" fill="#1565c0" rx="2"/>
+        <text x="387" y="52" text-anchor="middle" font-size="10" fill="#1565c0">P2送信</text>
+
+        <!-- Far echo arriving AFTER P2 -->
+        <!-- Echo from Pulse 1 arrives at t > PRI (after pulse 2 is sent) -->
+        <rect x="530" y="105" width="12" height="25" fill="#c62828" rx="2" opacity="0.8"/>
+        <text x="536" y="103" text-anchor="middle" font-size="10" fill="#c62828">P1エコー到達</text>
+        <text x="536" y="92" text-anchor="middle" font-size="9" fill="#c62828">（P2送信後）</text>
+
+        <!-- Arrow showing that this echo is misinterpreted as P2 echo -->
+        <path d="M536,132 Q536,160 460,170 Q400,178 400,178" fill="none" stroke="#c62828" stroke-width="1.5" marker-end="url(#arrow)"/>
+        <text x="488" y="165" text-anchor="middle" font-size="10" fill="#c62828">P2のエコーと誤認</text>
+
+        <!-- Second trace echo on PPI -->
+        <rect x="400" y="170" width="12" height="20" fill="rgba(200,0,0,0.6)" rx="2"/>
+        <text x="406" y="167" text-anchor="middle" font-size="10" fill="#c62828">偽像（P2系）</text>
+
+        <!-- Distance interpretation -->
+        <!-- Real distance annotation -->
+        <line x1="40" y1="210" x2="530" y2="210" stroke="#2e7d32" stroke-width="1.5" stroke-dasharray="4,3"/>
+        <line x1="40" y1="205" x2="40" y2="215" stroke="#2e7d32" stroke-width="1.5"/>
+        <line x1="530" y1="205" x2="530" y2="215" stroke="#2e7d32" stroke-width="1.5"/>
+        <text x="285" y="226" text-anchor="middle" font-size="11" fill="#2e7d32">実際の距離（Rmax以遠）</text>
+
+        <!-- False distance interpretation -->
+        <line x1="380" y1="238" x2="530" y2="238" stroke="#c62828" stroke-width="1.5"/>
+        <line x1="380" y1="233" x2="380" y2="243" stroke="#c62828" stroke-width="1.5"/>
+        <line x1="530" y1="233" x2="530" y2="243" stroke="#c62828" stroke-width="1.5"/>
+        <text x="455" y="254" text-anchor="middle" font-size="11" fill="#c62828">レーダーが認識する（誤った）距離</text>
+
+        <!-- Explanation box -->
+        <rect x="580" y="170" width="230" height="120" rx="8" fill="white" stroke="#d1dce8"/>
+        <text x="695" y="190" text-anchor="middle" font-size="12" font-weight="700" fill="#1a3a5c">識別と対処法</text>
+        <text x="590" y="210" font-size="10" fill="#555">・PRF（送信頻度）を変えると</text>
+        <text x="590" y="224" font-size="10" fill="#555">　偽像の位置が変わる</text>
+        <text x="590" y="238" font-size="10" fill="#555">・レンジを広げると</text>
+        <text x="590" y="252" font-size="10" fill="#555">　偽像が外側に移動</text>
+        <text x="590" y="268" font-size="10" fill="#e65100">・Rmaxを超えた遠距離物標が</text>
+        <text x="590" y="282" font-size="10" fill="#e65100">　実際より近くに表示される</text>
+      </svg>
+      <figcaption>図3-4　セカンドトレース（マルチプルトレース）偽像の説明図。送信パルス繰り返し間隔（PRI）より遅れてエコーが返ると、レーダーはこれを次パルスのエコーと誤認し、実際の距離よりも近くに表示する。PRFを変えると偽像の位置が変わることで識別できる。</figcaption>
+    </figure>
+
+    <div class="content-card">
+      <h3>偽像の比較・識別まとめ</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>偽像の種類</th><th>発生原因</th><th>画面上の特徴</th><th>識別・対処法</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>ブラインドセクター</td>
+              <td>マスト・煙突等がビームを遮断</td>
+              <td>特定方位の扇形領域でエコーが完全に消える</td>
+              <td>変針して死角を変える。目視等で補完。船橋配置に記録</td>
+            </tr>
+            <tr>
+              <td>サイドローブ偽像</td>
+              <td>副ローブが近距離強反射体に当たる</td>
+              <td>真エコーの両側・同距離に弧状の偽像が現れる</td>
+              <td>ゲインを下げると消える。真エコーは残る。近傍の大型構造物を確認</td>
+            </tr>
+            <tr>
+              <td>セカンドトレース偽像</td>
+              <td>PRI以上の遅延エコー（Rmaxを超える遠距離物標）</td>
+              <td>実際より近くに表示。PRFを変えると位置が変わる</td>
+              <td>PRFを変更して位置変化を確認。レンジを広げると外側に移動</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 固体化レーダーと調整 -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">３</span>固体化レーダーの調整特性と起動時間</h2>
+    <div class="content-card">
+      <h3>固体化レーダーの運用上の利点</h3>
+      <ul class="bullet-list">
+        <li><strong>即時起動：</strong> マグネトロンのウォームアップ（3〜4分）が不要。緊急時にほぼ即時で使用可能</li>
+        <li><strong>出力安定性：</strong> 半導体の特性上、起動直後から安定した送信出力が得られる</li>
+        <li><strong>スプリアス低減：</strong> フィルタ設計で不要発射を抑制。他システム（AIS・VHF）への干渉が少ない</li>
+        <li><strong>低保守：</strong> 危険な高電圧部品なし。フィールドでの交換が容易</li>
+        <li><strong>パルス圧縮の柔軟性：</strong> 短距離から遠距離まで複数のパルス長を切り替えることなく最適化可能</li>
+      </ul>
+      <div class="info-box">
+        <div class="info-label">2級：航行上の意義</div>
+        霧中・夜間などの危険な航行状況で急遽レーダーが必要になった際、固体化レーダーでは数秒で作動し見張りを開始できる。マグネトロン機の場合、ウォームアップ中は他の手段（目視・音響信号）のみに頼らざるを得ず、COLREGs規則4条（適切な見張り）の観点からも固体化の早期使用は重要。
+      </div>
+    </div>
+  </section>
+
+  <!-- ルーブリック -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">評</span>ルーブリック（評価基準）</h2>
+    <div class="table-wrapper">
+      <table class="rubric-table">
+        <thead>
+          <tr>
+            <th>評価観点</th>
+            <th><span class="level-badge b4">4 優秀</span></th>
+            <th><span class="level-badge b3">3 良</span></th>
+            <th><span class="level-badge b2">2 可</span></th>
+            <th><span class="level-badge b1">1 不可</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>各調整の役割</td>
+            <td class="level-4">ゲイン・STC・FTCの役割と調整上の注意を全て正確に述べられる</td>
+            <td class="level-3">2つを正確に説明できる</td>
+            <td class="level-2">1つを正確に説明できる</td>
+            <td class="level-1">説明できない</td>
+          </tr>
+          <tr>
+            <td>偽像の識別と対処</td>
+            <td class="level-4">3種の偽像を全て識別し、発生原因と対処を正確に述べられる</td>
+            <td class="level-3">2種を識別・説明できる</td>
+            <td class="level-2">1種を識別・説明できる</td>
+            <td class="level-1">識別できない</td>
+          </tr>
+          <tr>
+            <td>固体化レーダーの調整特性</td>
+            <td class="level-4">固体化特有の利点を調整・運用の観点から具体的に説明できる</td>
+            <td class="level-3">基本的な利点を述べられる</td>
+            <td class="level-2">概念的理解にとどまる</td>
+            <td class="level-1">理解が不十分</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 確認テスト -->
+  <section class="content-section test-section">
+    <h2 class="section-title"><span class="icon">問</span>確認テスト</h2>
+    <p style="margin-bottom:1.2rem; font-size:0.9rem; color:var(--text-light);">※ 解答欄には記入不要です。口頭または記述で回答してください。</p>
+
+    <div class="test-question">
+      <div class="q-header"><span class="q-num">問題 1</span><span class="q-level g3">3級</span><span class="q-type">択一式</span></div>
+      <p>STC（海面クラッター抑制）を調整しすぎた場合の危険性として正しいものはどれか。</p>
+      <ul class="choices">
+        <li>ア．遠距離の物標を見落とす</li>
+        <li>イ．近距離の小物標を見落とす</li>
+        <li>ウ．方位精度が低下する</li>
+        <li>エ．画面全体が暗くなる</li>
+      </ul>
+    </div>
+
+    <div class="test-question">
+      <div class="q-header"><span class="q-num">問題 2</span><span class="q-level g3">3級</span><span class="q-type">記述式</span></div>
+      <p>ブラインドセクターの発生原因と運用上の注意を説明しなさい。</p>
+    </div>
+
+    <div class="test-question">
+      <div class="q-header"><span class="q-num">問題 3</span><span class="q-level g2">2級</span><span class="q-type">記述式</span></div>
+      <p>サイドローブ偽像の発生原因と、画面上の特徴、確認方法を説明しなさい。</p>
+    </div>
+
+    <div class="test-question">
+      <div class="q-header"><span class="q-num">問題 4</span><span class="q-level g2">2級</span><span class="q-type">記述式</span></div>
+      <p>固体化（半導体）レーダーがマグネトロンレーダーと比べて起動・運用上で有利な点を2つ述べ、船舶運航上の意義を説明しなさい。</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <strong>広島商船高等専門学校</strong>　船舶レーダー教育課程<br>
+  第3回 / 全5回　|　2026年5月12日（火）<br>
+  <span class="next-session">次回（第4回）：2026年5月19日（火）— レーダーによる測位・避険線</span>
+</footer>
+
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  var scrollRaf=0;
+  function emitScroll(){
+    scrollRaf=0;
+    var x=window.scrollX||window.pageXOffset||0;
+    var y=window.scrollY||window.pageYOffset||0;
+    window.parent.postMessage({type:'INLINE_EDIT_SCROLL',scrollX:x,scrollY:y},'*');
+  }
+  window.addEventListener('scroll',function(){
+    if(scrollRaf)return;
+    scrollRaf=requestAnimationFrame(emitScroll);
+  },{passive:true,capture:true});
+  emitScroll();
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>

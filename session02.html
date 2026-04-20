@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第2回 装置構成と表示方式 | 船舶レーダー教育</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700&family=Noto+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a3a5c;
+    --primary-light: #2a5a8c;
+    --accent: #e8a020;
+    --accent-dark: #c4841a;
+    --bg: #f4f6f9;
+    --card-bg: #ffffff;
+    --text: #2c3e50;
+    --text-light: #566573;
+    --grade3: #2e7d32;
+    --grade3-bg: #e8f5e9;
+    --grade2: #1565c0;
+    --grade2-bg: #e3f2fd;
+    --border: #d1dce8;
+    --shadow: 0 2px 12px rgba(26,58,92,0.10);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Noto Sans JP', 'Noto Sans', sans-serif; background: var(--bg); color: var(--text); font-size: 15px; line-height: 1.7; }
+  nav { background: var(--primary); color: #fff; padding: 0 2rem; height: 56px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+  nav .nav-brand { font-size: 1rem; font-weight: 700; letter-spacing: 0.05em; display: flex; align-items: center; gap: 0.6rem; }
+  nav .nav-session { background: var(--accent); color: var(--primary); font-weight: 700; font-size: 0.85rem; padding: 0.25rem 0.9rem; border-radius: 20px; letter-spacing: 0.04em; }
+  .page-header { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%); color: #fff; padding: 3rem 2rem 2.5rem; position: relative; overflow: hidden; }
+  .page-header::after { content: ''; position: absolute; right: -60px; bottom: -60px; width: 280px; height: 280px; border-radius: 50%; background: rgba(232,160,32,0.12); }
+  .header-inner { max-width: 1100px; margin: 0 auto; position: relative; z-index: 1; }
+  .header-meta { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 0.8rem; font-size: 0.82rem; opacity: 0.85; }
+  .header-meta span { background: rgba(255,255,255,0.15); padding: 0.2rem 0.7rem; border-radius: 4px; border: 1px solid rgba(255,255,255,0.2); }
+  .header-meta .accent-tag { background: var(--accent); color: var(--primary); border-color: transparent; font-weight: 700; }
+  .page-header h1 { font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 700; line-height: 1.3; margin-bottom: 0.6rem; }
+  .page-header p.subtitle { font-size: 1rem; opacity: 0.85; max-width: 700px; }
+  .main-content { max-width: 1100px; margin: 0 auto; padding: 2.5rem 1.5rem; }
+  .section-title { font-size: 1.3rem; font-weight: 700; color: var(--primary); margin-bottom: 1.2rem; padding-bottom: 0.5rem; border-bottom: 3px solid var(--accent); display: flex; align-items: center; gap: 0.5rem; }
+  .section-title .icon { background: var(--primary); color: #fff; width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 0.85rem; font-weight: 700; flex-shrink: 0; }
+  section.content-section { margin-bottom: 3rem; }
+  .objective-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; }
+  @media (max-width: 700px) { .objective-grid { grid-template-columns: 1fr; } }
+  .objective-card { background: var(--card-bg); border-radius: 10px; padding: 1.4rem 1.6rem; box-shadow: var(--shadow); border-top: 4px solid; }
+  .objective-card.grade3 { border-color: var(--grade3); }
+  .objective-card.grade2 { border-color: var(--grade2); }
+  .objective-card .grade-label { font-size: 0.78rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 0.18rem 0.7rem; border-radius: 4px; display: inline-block; margin-bottom: 0.8rem; }
+  .grade3 .grade-label { background: var(--grade3-bg); color: var(--grade3); }
+  .grade2 .grade-label { background: var(--grade2-bg); color: var(--grade2); }
+  .objective-card p { font-size: 0.93rem; line-height: 1.75; }
+  .content-card { background: var(--card-bg); border-radius: 10px; padding: 1.8rem 2rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
+  .content-card h3 { font-size: 1.1rem; font-weight: 700; color: var(--primary); margin-bottom: 1rem; padding-left: 0.8rem; border-left: 3px solid var(--accent); }
+  .content-card p { margin-bottom: 0.8rem; font-size: 0.93rem; }
+  .content-card p:last-child { margin-bottom: 0; }
+  .table-wrapper { overflow-x: auto; margin: 1rem 0; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  thead tr { background: var(--primary); color: #fff; }
+  thead th { padding: 0.75rem 1rem; text-align: left; font-weight: 600; font-size: 0.85rem; }
+  tbody tr:nth-child(even) { background: #f0f4f8; }
+  tbody tr:hover { background: #e8f0f8; }
+  tbody td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody td:first-child { font-weight: 600; color: var(--primary); }
+  .svg-figure { background: var(--card-bg); border-radius: 10px; padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
+  .svg-figure figcaption { text-align: center; font-size: 0.82rem; color: var(--text-light); margin-top: 0.8rem; font-style: italic; }
+  .svg-figure svg { width: 100%; height: auto; display: block; }
+  .rubric-table thead th:first-child { width: 22%; }
+  .rubric-table thead th:not(:first-child) { width: 19.5%; text-align: center; }
+  .rubric-table td:not(:first-child) { text-align: center; font-size: 0.82rem; }
+  .level-4 { background: #fff8e1; }
+  .level-3 { background: #e8f5e9; }
+  .level-2 { background: #e3f2fd; }
+  .level-1 { background: #fce4ec; }
+  .level-badge { display: inline-block; padding: 0.15rem 0.55rem; border-radius: 12px; font-weight: 700; font-size: 0.8rem; margin-bottom: 0.3rem; }
+  .b4 { background: #ffd54f; color: #5d4037; }
+  .b3 { background: #81c784; color: #1b5e20; }
+  .b2 { background: #64b5f6; color: #0d47a1; }
+  .b1 { background: #ef9a9a; color: #b71c1c; }
+  .test-section { margin-bottom: 3rem; }
+  .test-question { background: var(--card-bg); border-radius: 10px; padding: 1.5rem 1.8rem; box-shadow: var(--shadow); margin-bottom: 1.2rem; border-left: 4px solid var(--accent); }
+  .test-question .q-header { display: flex; gap: 0.7rem; align-items: flex-start; margin-bottom: 0.8rem; }
+  .q-num { background: var(--primary); color: #fff; font-weight: 700; font-size: 0.82rem; padding: 0.2rem 0.65rem; border-radius: 5px; white-space: nowrap; flex-shrink: 0; }
+  .q-level { font-size: 0.78rem; font-weight: 700; padding: 0.2rem 0.65rem; border-radius: 5px; white-space: nowrap; flex-shrink: 0; }
+  .q-level.g3 { background: var(--grade3-bg); color: var(--grade3); }
+  .q-level.g2 { background: var(--grade2-bg); color: var(--grade2); }
+  .q-type { font-size: 0.78rem; color: var(--text-light); padding: 0.2rem 0.5rem; background: var(--bg); border-radius: 5px; flex-shrink: 0; }
+  .test-question p { font-size: 0.93rem; margin-bottom: 0.6rem; }
+  .choices { list-style: none; padding-left: 0.5rem; }
+  .choices li { padding: 0.35rem 0.8rem; border-radius: 5px; margin-bottom: 0.25rem; font-size: 0.9rem; background: var(--bg); border: 1px solid var(--border); }
+  footer { background: var(--primary); color: rgba(255,255,255,0.8); text-align: center; padding: 2rem 1.5rem; font-size: 0.85rem; line-height: 1.8; }
+  footer strong { color: #fff; }
+  footer .next-session { display: inline-block; background: var(--accent); color: var(--primary); font-weight: 700; padding: 0.3rem 1rem; border-radius: 6px; margin-top: 0.5rem; font-size: 0.9rem; }
+  .highlight-box { background: #fff8e1; border-left: 4px solid var(--accent); padding: 0.9rem 1.2rem; border-radius: 0 8px 8px 0; margin: 1rem 0; font-size: 0.9rem; }
+  .info-box { background: #e8f0fc; border: 1px solid #b3c8ec; border-radius: 8px; padding: 1rem 1.2rem; margin: 1rem 0; font-size: 0.88rem; }
+  .info-box .info-label { font-weight: 700; color: var(--grade2); margin-bottom: 0.3rem; font-size: 0.82rem; text-transform: uppercase; letter-spacing: 0.05em; }
+  ul.bullet-list { padding-left: 1.4rem; margin: 0.6rem 0; }
+  ul.bullet-list li { margin-bottom: 0.4rem; font-size: 0.92rem; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1.2rem; margin-bottom: 1.5rem; }
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+  @media print {
+    nav { display: none !important; }
+    body { background: #fff; font-size: 12pt; }
+    .page-header { background: var(--primary) !important; -webkit-print-color-adjust: exact; }
+    .content-card, .svg-figure, .test-question { box-shadow: none; border: 1px solid #ccc; }
+    section.content-section { page-break-inside: avoid; }
+    .test-section { page-break-before: always; }
+    footer { page-break-before: always; }
+    @page { margin: 20mm 15mm; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">
+    <svg width="28" height="28" viewBox="0 0 28 28" fill="none" aria-label="レーダーアイコン">
+      <circle cx="14" cy="14" r="12" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+      <circle cx="14" cy="14" r="7" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+      <circle cx="14" cy="14" r="2" fill="#e8a020"/>
+      <line x1="14" y1="14" x2="24" y2="6" stroke="#e8a020" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    船舶レーダー教育 | 広島商船高等専門学校
+  </div>
+  <div class="nav-session">第2回 / 全5回</div>
+</nav>
+
+<div class="page-header">
+  <div class="header-inner">
+    <div class="header-meta">
+      <span class="accent-tag">Module 02</span>
+      <span>2026年4月28日（火）</span>
+      <span>対象：3級・2級航海士候補生</span>
+      <span>広島商船高等専門学校</span>
+    </div>
+    <h1>装置構成と表示方式</h1>
+    <p class="subtitle">レーダーの主要構成要素から、PPI表示の仕組み、各種表示モード（Head-up / North-up / Course-up）、相対・真運動表示の違い、そしてVRM・EBL・オフセンター機能の実用的な活用法を学ぶ。</p>
+  </div>
+</div>
+
+<div class="main-content">
+
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">目</span>到達目標</h2>
+    <div class="objective-grid">
+      <div class="objective-card grade3">
+        <div class="grade-label">3級航海士候補生</div>
+        <p>レーダーの基本的な表示方式を正しく設定できる。Head-up・North-up・Course-upそれぞれの特徴を説明でき、VRM・EBLの用途を正確に説明できる。</p>
+      </div>
+      <div class="objective-card grade2">
+        <div class="grade-label">2級航海士候補生</div>
+        <p>航海状況（沿岸・外洋・狭水道・視界制限等）に応じて表示モードやオフセンター機能を適切に選択し、その理由を説明できる。相対・真運動表示を衝突予防に活用できる。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 装置構成 -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">１</span>レーダー装置の主要構成要素</h2>
+    <div class="content-card">
+      <h3>主要ユニットと機能</h3>
+      <p>船舶レーダーは大きく「アンテナ部」「送受信部」「表示部」の3ユニットで構成される。各部の機能を理解することは、装置特性と限界を知る上で重要である。</p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>ユニット</th><th>主要コンポーネント</th><th>機能</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>アンテナ部</td><td>スロットアレイアンテナ・回転機構・コンパスセンサ</td><td>電波の送受信・回転による360°走査・方位同期</td></tr>
+            <tr><td>送信部</td><td>マグネトロン（従来）/ 半導体パワーアンプ（固体化）・変調器</td><td>高周波パルスの生成・送信タイミング制御</td></tr>
+            <tr><td>受信部</td><td>サーキュレータ・ミキサ・IF増幅・ADコンバータ</td><td>エコー信号の増幅・周波数変換・デジタル化</td></tr>
+            <tr><td>信号処理部</td><td>DSP・ARPA処理ユニット</td><td>クラッター抑制・目標検出・追尾処理</td></tr>
+            <tr><td>表示部</td><td>カラーLCDモニタ・操作パネル</td><td>PPI表示・各種設定・オーバーレイ表示</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="highlight-box">
+        <strong>固体化レーダーの送信部：</strong> 半導体パワーアンプ（SSPA）を複数並列接続し、低ピーク・長パルスで送信。パルス圧縮（チャープ変調等）によりピーク出力数十Wでも高い距離分解能と探知距離を実現する。危険な高電圧（マグネトロンでは数kV）が不要なため保守性も向上。
+      </div>
+    </div>
+  </section>
+
+  <!-- PPI表示 -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">２</span>PPI表示の仕組みと各種表示モード</h2>
+    <div class="content-card">
+      <h3>PPI（Plan Position Indicator）表示</h3>
+      <p>PPIは自船を中心（または画面の任意点）に置き、アンテナの回転に同期して電波の往復時間に基づく距離情報を極座標で表示する方式である。画面上の1点は「特定の方位・距離にエコーが存在する」ことを示す。</p>
+      <ul class="bullet-list">
+        <li><strong>レンジリング（定距離環）：</strong> 等間隔の同心円。VRM（可変距離マーカー）とは独立</li>
+        <li><strong>ヘッディングライン（HL）：</strong> 自船の船首方向を示す直線。方位ゼロ点の確認に使用</li>
+        <li><strong>SHM（Ship's Heading Marker）：</strong> HL全般を指す場合もある</li>
+      </ul>
+    </div>
+
+    <!-- SVG: PPI表示模式図 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 420" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="420" fill="#f8fafc" rx="8"/>
+        <text x="410" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1a3a5c">PPI表示の模式図（North-up表示）</text>
+
+        <!-- PPI screen background -->
+        <rect x="200" y="40" width="380" height="380" rx="8" fill="#0a1520"/>
+        <!-- Range rings -->
+        <circle cx="390" cy="230" r="170" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="390" cy="230" r="127" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="390" cy="230" r="85" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="390" cy="230" r="43" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <!-- Range ring labels -->
+        <text x="395" y="196" font-size="9" fill="#2a6080">3 nm</text>
+        <text x="395" y="153" font-size="9" fill="#2a6080">6 nm</text>
+        <text x="395" y="110" font-size="9" fill="#2a6080">9 nm</text>
+        <text x="395" y="66" font-size="9" fill="#2a6080">12 nm</text>
+
+        <!-- North arrow -->
+        <line x1="390" y1="50" x2="390" y2="400" stroke="#1a3060" stroke-width="0.5" stroke-dasharray="3,3"/>
+        <line x1="210" y1="230" x2="570" y2="230" stroke="#1a3060" stroke-width="0.5" stroke-dasharray="3,3"/>
+
+        <!-- Own ship (center) -->
+        <polygon points="390,222 383,242 390,238 397,242" fill="#e8a020" stroke="none"/>
+        <text x="390" y="256" text-anchor="middle" font-size="9" fill="#e8a020">自船</text>
+
+        <!-- Heading line (North-up: ship heading = 045°) -->
+        <line x1="390" y1="230" x2="450" y2="110" stroke="#e8a020" stroke-width="1.5"/>
+        <text x="455" y="105" font-size="10" fill="#e8a020">HL (045°)</text>
+
+        <!-- Target ship A -->
+        <circle cx="440" cy="120" r="4" fill="#00e5ff"/>
+        <text x="450" y="118" font-size="9" fill="#00e5ff">A</text>
+        <!-- Target ship B -->
+        <circle cx="320" cy="160" r="4" fill="#00e5ff"/>
+        <text x="308" y="158" font-size="9" fill="#00e5ff">B</text>
+        <!-- Target ship C (small) -->
+        <circle cx="480" cy="200" r="3" fill="#00e5ff"/>
+        <text x="488" y="198" font-size="9" fill="#00e5ff">C</text>
+
+        <!-- Land echo (irregular shape) -->
+        <path d="M220,100 L240,90 L265,95 L275,115 L260,130 L240,125 Z" fill="#1a6020" opacity="0.8"/>
+        <text x="247" y="110" text-anchor="middle" font-size="9" fill="#4caf50">陸岸</text>
+
+        <!-- VRM circle -->
+        <circle cx="390" cy="230" r="100" fill="none" stroke="#ff9800" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="492" y="232" font-size="10" fill="#ff9800">VRM</text>
+
+        <!-- EBL line -->
+        <line x1="390" y1="230" x2="540" y2="115" stroke="#ff5252" stroke-width="1.5" stroke-dasharray="5,3"/>
+        <text x="543" y="110" font-size="10" fill="#ff5252">EBL</text>
+
+        <!-- N indicator -->
+        <text x="387" y="50" font-size="14" font-weight="700" fill="#4db6ac">N</text>
+
+        <!-- Legend outside PPI -->
+        <rect x="600" y="60" width="210" height="265" rx="8" fill="white" stroke="#d1dce8"/>
+        <text x="705" y="82" text-anchor="middle" font-size="12" font-weight="700" fill="#1a3a5c">画面表示の凡例</text>
+        <!-- Items -->
+        <circle cx="620" cy="102" r="5" fill="#00e5ff"/>
+        <text x="635" y="107" font-size="11" fill="#333">他船エコー</text>
+        <path d="M613,120 L617,130 L621,127 L625,130" fill="#e8a020" stroke="none"/>
+        <polygon points="617,118 612,130 617,127 622,130" fill="#e8a020"/>
+        <text x="635" y="128" font-size="11" fill="#333">自船（船首方向↑）</text>
+        <path d="M612,142 L640,142" stroke="#1a6020" stroke-width="8"/>
+        <text x="635" y="148" font-size="11" fill="#333">陸岸エコー</text>
+        <circle cx="617" cy="163" r="15" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <text x="635" y="167" font-size="11" fill="#333">レンジリング</text>
+        <line x1="612" y1="184" x2="640" y2="184" stroke="#ff9800" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="635" y="188" font-size="11" fill="#333">VRM（可変距離マーカー）</text>
+        <line x1="612" y1="205" x2="635" y2="185" stroke="#ff5252" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="635" y="210" font-size="11" fill="#333">EBL（電子方位線）</text>
+        <line x1="612" y1="228" x2="640" y2="228" stroke="#e8a020" stroke-width="1.5"/>
+        <text x="635" y="232" font-size="11" fill="#333">HL（ヘッディングライン）</text>
+        <text x="617" y="254" font-size="14" font-weight="700" fill="#4db6ac">N</text>
+        <text x="635" y="258" font-size="11" fill="#333">北方向マーカー</text>
+        <text x="705" y="315" text-anchor="middle" font-size="10" fill="#999">North-up表示：真北が画面上方</text>
+      </svg>
+      <figcaption>図2-1　PPI表示の模式図（North-up）。同心円のレンジリング、自船位置（中心）、他船エコー（点）、陸岸エコー（緑）、VRM（オレンジ）、EBL（赤破線）、ヘッディングライン（HL）が示されている。</figcaption>
+    </figure>
+
+    <div class="content-card">
+      <h3>表示方位モードの比較（Head-up / North-up / Course-up）</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>モード</th><th>画面上方の向き</th><th>特徴</th><th>適した状況</th><th>注意点</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Head-up（頭上方）</td><td>自船の現在針路</td><td>自船前方が常に上。見張りと直感的に一致</td><td>一般的な見張り・港湾内操船</td><td>変針のたびに画面全体が回転。海図との照合が困難</td></tr>
+            <tr><td>North-up（北上方）</td><td>真北（常に固定）</td><td>海図の向きと一致。安定した画面</td><td>沿岸航行・測位・海図との照合</td><td>自船前方が画面上方とは限らない</td></tr>
+            <tr><td>Course-up（コース上方）</td><td>自船の設定針路</td><td>変針時に自動リセット。前方が常に上</td><td>長距離航行・定針中の見張り</td><td>変針後に画面がリセットされ一時的に見にくくなる</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- SVG: Head-up vs North-up比較図 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 380" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="380" fill="#f8fafc" rx="8"/>
+        <text x="410" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1a3a5c">Head-up表示 vs North-up表示（同一航行状況）</text>
+        <text x="410" y="44" text-anchor="middle" font-size="11" fill="#555">自船針路：045°（北東）、他船A：真方位000°距離6nm、他船B：真方位090°距離4nm</text>
+
+        <!-- === HEAD-UP (left) === -->
+        <rect x="40" y="60" width="330" height="300" rx="8" fill="#0a1520"/>
+        <text x="205" y="54" text-anchor="middle" font-size="13" font-weight="700" fill="#1a3a5c">Head-up（頭上方表示）</text>
+        <!-- Range rings -->
+        <circle cx="205" cy="210" r="130" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="205" cy="210" r="87" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="205" cy="210" r="43" fill="none" stroke="#1a4060" stroke-width="1"/>
+
+        <!-- Cross hairs -->
+        <line x1="50" y1="210" x2="360" y2="210" stroke="#1a3060" stroke-width="0.5" stroke-dasharray="3,3"/>
+        <line x1="205" y1="70" x2="205" y2="355" stroke="#1a3060" stroke-width="0.5" stroke-dasharray="3,3"/>
+
+        <!-- Own ship -->
+        <polygon points="205,202 199,220 205,216 211,220" fill="#e8a020"/>
+
+        <!-- Heading line = straight up in Head-up (ship heading IS up) -->
+        <line x1="205" y1="210" x2="205" y2="75" stroke="#e8a020" stroke-width="1.5"/>
+        <text x="215" y="80" font-size="10" fill="#e8a020">HL(↑=045°)</text>
+
+        <!-- In Head-up: ship is going 045°, so UP = 045°.
+             Target A is at bearing 000° from own ship. In Head-up, 000° is at -45° from screen top (rotated clockwise)
+             So A appears to the LEFT of HL (315° in screen = true 000°)
+             Target A: bearing 000° true. In head-up (up=045°): screen bearing = 000°-045° = -45° = 315°
+             From center: 315° = left and slightly up
+             Distance 6nm, screen scale: 130px = ~8nm, so 6nm ≈ 97px
+             315° direction: x = -97*sin(-45°) = 97*0.707 = 68.6 → cx=205-69=136, y = -97*cos(315°)= ... -->
+        <!-- A at screen angle 315° = up-left: sin315=-0.707, cos315=0.707 → x=205+97*(-0.707)=205-69=136, y=210-97*0.707=210-69=141 -->
+        <circle cx="136" cy="141" r="5" fill="#00e5ff"/>
+        <text x="122" y="138" font-size="10" fill="#00e5ff">A（000°真）</text>
+
+        <!-- Target B: bearing 090° true. Screen bearing = 090°-045° = 045°
+             045°: sin45=0.707, cos45=0.707 → x=205+87*0.707=205+62=267, y=210-87*0.707=210-62=148
+             4nm ≈ 65px -->
+        <circle cx="251" cy="164" r="5" fill="#00e5ff"/>
+        <text x="255" y="162" font-size="10" fill="#00e5ff">B（090°真）</text>
+
+        <!-- North arrow in head-up (rotated -45°, pointing up-left) -->
+        <line x1="205" y1="210" x2="156" y2="161" stroke="#4db6ac" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <text x="143" y="158" font-size="12" font-weight="700" fill="#4db6ac">N</text>
+
+        <!-- === NORTH-UP (right) === -->
+        <rect x="450" y="60" width="330" height="300" rx="8" fill="#0a1520"/>
+        <text x="615" y="54" text-anchor="middle" font-size="13" font-weight="700" fill="#1a3a5c">North-up（北上方表示）</text>
+        <!-- Range rings -->
+        <circle cx="615" cy="210" r="130" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="615" cy="210" r="87" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="615" cy="210" r="43" fill="none" stroke="#1a4060" stroke-width="1"/>
+
+        <!-- Cross hairs -->
+        <line x1="460" y1="210" x2="770" y2="210" stroke="#1a3060" stroke-width="0.5" stroke-dasharray="3,3"/>
+        <line x1="615" y1="70" x2="615" y2="355" stroke="#1a3060" stroke-width="0.5" stroke-dasharray="3,3"/>
+
+        <!-- North arrow = straight up -->
+        <text x="612" y="78" font-size="14" font-weight="700" fill="#4db6ac">N</text>
+
+        <!-- Own ship -->
+        <polygon points="615,202 609,220 615,216 621,220" fill="#e8a020"/>
+
+        <!-- Heading line: 045° in North-up = upper-right (sin45=0.707, cos45=0.707) -->
+        <line x1="615" y1="210" x2="707" y2="118" stroke="#e8a020" stroke-width="1.5"/>
+        <text x="712" y="115" font-size="10" fill="#e8a020">HL(045°)</text>
+
+        <!-- Target A: bearing 000° = straight up, 6nm ≈ 97px → (615, 210-97) = (615, 113) -->
+        <circle cx="615" cy="113" r="5" fill="#00e5ff"/>
+        <text x="622" y="111" font-size="10" fill="#00e5ff">A（000°）</text>
+
+        <!-- Target B: bearing 090° = right, 4nm ≈ 65px → (615+65, 210) = (680, 210) -->
+        <circle cx="680" cy="210" r="5" fill="#00e5ff"/>
+        <text x="686" y="208" font-size="10" fill="#00e5ff">B（090°）</text>
+
+        <!-- Annotation -->
+        <text x="205" y="373" text-anchor="middle" font-size="11" fill="#c62828">→ 物標の方位が針路に対して相対的に表示される</text>
+        <text x="615" y="373" text-anchor="middle" font-size="11" fill="#2e7d32">→ 海図と同じ向き。物標の真方位がそのまま読める</text>
+      </svg>
+      <figcaption>図2-2　同一状況のHead-up表示（左）とNorth-up表示（右）の比較。Head-upでは自船の針路（045°）が常に上になるため物標の画面上の位置が変わるが、North-upでは真北が上で固定され、海図との照合が容易。</figcaption>
+    </figure>
+  </section>
+
+  <!-- 相対/真運動 -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">３</span>相対運動表示と真運動表示</h2>
+    <div class="two-col">
+      <div class="content-card" style="margin-bottom:0">
+        <h3>相対運動表示（Relative Motion）</h3>
+        <p>自船を画面中心（または固定点）に置き、他船の<strong>自船に対する相対的な動き</strong>を表示する。エコーの軌跡は相対運動線（ベクトル）を示す。</p>
+        <ul class="bullet-list">
+          <li>画面上で最もシンプルな表示</li>
+          <li>相対運動線を延長してCPA（最接近点）を直視できる</li>
+          <li>自船が動いていても静止物標は同じ位置に見える</li>
+        </ul>
+      </div>
+      <div class="content-card" style="margin-bottom:0">
+        <h3>真運動表示（True Motion）</h3>
+        <p>画面上で自船・他船が<strong>真の対地速度・方向で移動</strong>する表示方式。海図的な見方ができる。</p>
+        <ul class="bullet-list">
+          <li>各船の真の針路・速力が軌跡から読み取れる</li>
+          <li>陸岸・灯浮標などの固定物が画面上で静止</li>
+          <li>ジャイロコンパスとログ（速力計）との連動が必要</li>
+          <li>自船が画面端に達すると自動リセット（再センタリング）</li>
+        </ul>
+      </div>
+    </div>
+    <div class="info-box" style="margin-top:1rem;">
+      <div class="info-label">2級：CPA判断への活用</div>
+      相対運動表示では相対運動線（RML）が自船の画面中心を通過する場合、理論的に衝突する可能性があることを示す（DCPA=0）。一方、真運動表示では他船の真の針路・速力を直感的に把握しやすく、自船との関係をより正確に評価できる。多くの現代レーダーはARPAでDCPA/TCPAを自動計算するが、その意味を理解していることが重要。
+    </div>
+  </section>
+
+  <!-- VRM・EBL・オフセンター -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">４</span>VRM・EBL・オフセンター表示</h2>
+
+    <!-- SVG: VRM・EBL使用例 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 360" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="360" fill="#f8fafc" rx="8"/>
+        <text x="410" y="26" text-anchor="middle" font-size="15" font-weight="700" fill="#1a3a5c">VRM・EBLの使用例（測位・避険線設定）</text>
+
+        <!-- PPI background -->
+        <rect x="60" y="45" width="700" height="300" rx="8" fill="#0a1520"/>
+
+        <!-- Range rings -->
+        <circle cx="410" cy="195" r="130" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="410" cy="195" r="87" fill="none" stroke="#1a4060" stroke-width="1"/>
+        <circle cx="410" cy="195" r="43" fill="none" stroke="#1a4060" stroke-width="1"/>
+
+        <!-- N arrow -->
+        <text x="407" y="60" font-size="14" font-weight="700" fill="#4db6ac">N</text>
+        <line x1="410" y1="63" x2="410" y2="325" stroke="#1a3060" stroke-width="0.5" stroke-dasharray="3,3"/>
+        <line x1="70" y1="195" x2="750" y2="195" stroke="#1a3060" stroke-width="0.5" stroke-dasharray="3,3"/>
+
+        <!-- Own ship -->
+        <polygon points="410,187 404,205 410,201 416,205" fill="#e8a020"/>
+        <text x="420" y="205" font-size="9" fill="#e8a020">自船</text>
+
+        <!-- Heading line (heading 000°, straight up) -->
+        <line x1="410" y1="195" x2="410" y2="65" stroke="#e8a020" stroke-width="1.5"/>
+
+        <!-- Land mass (right side) -->
+        <path d="M610,80 L680,100 L720,130 L730,180 L720,220 L700,240 L680,235 L660,210 L650,180 L660,140 L645,110 Z" fill="#1a5015" opacity="0.85"/>
+        <text x="690" y="165" font-size="10" fill="#4caf50" text-anchor="middle">陸岸</text>
+
+        <!-- Buoy -->
+        <rect x="515" y="198" width="8" height="8" fill="#ff5252" rx="1"/>
+        <text x="519" y="215" text-anchor="middle" font-size="9" fill="#ff5252">灯浮標</text>
+
+        <!-- VRM-1 (distance to land echo) -->
+        <circle cx="410" cy="195" r="215" fill="none" stroke="#ff9800" stroke-width="1.5" stroke-dasharray="5,3" clip-path="url(#ppi-clip)"/>
+        <!-- Let's use a smaller radius that fits the PPI -->
+        <circle cx="410" cy="195" r="110" fill="none" stroke="#ff9800" stroke-width="1.8" stroke-dasharray="5,3"/>
+        <text x="524" y="192" font-size="11" fill="#ff9800">VRM-1</text>
+        <text x="524" y="205" font-size="10" fill="#ff9800">（3.0 nm）</text>
+        <!-- Annotation: distance from own ship to land -->
+        <line x1="410" y1="195" x2="410" y2="85" stroke="#ff9800" stroke-width="1" stroke-dasharray="3,2"/>
+        <text x="415" y="145" font-size="10" fill="#ff9800">距離計測</text>
+
+        <!-- VRM-2 (safety range) -->
+        <circle cx="410" cy="195" r="75" fill="none" stroke="#26a69a" stroke-width="1.8" stroke-dasharray="5,3"/>
+        <text x="490" y="195" font-size="11" fill="#26a69a">VRM-2</text>
+        <text x="490" y="207" font-size="10" fill="#26a69a">（2.0 nm 避険）</text>
+
+        <!-- EBL-1 (bearing to buoy) -->
+        <line x1="410" y1="195" x2="640" y2="100" stroke="#ff5252" stroke-width="1.8" stroke-dasharray="6,3"/>
+        <text x="645" y="96" font-size="11" fill="#ff5252">EBL-1</text>
+        <text x="645" y="108" font-size="10" fill="#ff5252">（055°）</text>
+        <text x="645" y="120" font-size="10" fill="#ff5252">灯浮標ベアリング</text>
+
+        <!-- EBL-2 (safe bearing line) -->
+        <line x1="410" y1="195" x2="600" y2="65" stroke="#64b5f6" stroke-width="1.8" stroke-dasharray="6,3"/>
+        <text x="605" y="61" font-size="11" fill="#64b5f6">EBL-2</text>
+        <text x="605" y="73" font-size="10" fill="#64b5f6">（避険方位線）</text>
+
+        <!-- Legend -->
+        <rect x="75" y="55" width="200" height="130" rx="6" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.15)"/>
+        <text x="175" y="73" text-anchor="middle" font-size="11" font-weight="700" fill="white">操作内容</text>
+        <line x1="90" y1="88" x2="120" y2="88" stroke="#ff9800" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="128" y="92" font-size="10" fill="#ff9800">VRM：距離測定・避険距離設定</text>
+        <line x1="90" y1="108" x2="120" y2="108" stroke="#ff5252" stroke-width="1.5" stroke-dasharray="4,2"/>
+        <text x="128" y="112" font-size="10" fill="#ff5252">EBL：方位測定・避険方位設定</text>
+        <text x="90" y="132" font-size="10" fill="#aaa">VRM+EBLを組み合わせると</text>
+        <text x="90" y="146" font-size="10" fill="#aaa">レーダー測位が可能</text>
+        <text x="90" y="160" font-size="10" fill="#4db6ac">（距離+方位の交点=船位）</text>
+      </svg>
+      <figcaption>図2-3　VRM（可変距離マーカー）とEBL（電子方位線）の使用例。VRMで物標までの距離を測定し安全余裕距離を確保、EBLで方位を測定することで測位・避険線設定の両方に活用できる。</figcaption>
+    </figure>
+
+    <div class="content-card">
+      <h3>オフセンター表示の目的</h3>
+      <p>通常PPIは自船を画面中心（センター）に表示するが、<strong>オフセンター表示</strong>では自船位置を画面中心からずらして表示する。これにより前方（進行方向）の監視範囲を大きく取ることができる。</p>
+      <ul class="bullet-list">
+        <li><strong>前方監視の強化：</strong> 狭水道・港湾入出港時に前方の表示範囲を拡大</li>
+        <li><strong>同じレンジで広い前方範囲を監視：</strong> レンジを下げずに前方情報量を増やせる</li>
+        <li><strong>使用上の注意：</strong> 後方の表示範囲が減少する。オフセンター方向の物標は画面端に近づき見落としリスクあり</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ルーブリック -->
+  <section class="content-section">
+    <h2 class="section-title"><span class="icon">評</span>ルーブリック（評価基準）</h2>
+    <div class="table-wrapper">
+      <table class="rubric-table">
+        <thead>
+          <tr>
+            <th>評価観点</th>
+            <th><span class="level-badge b4">4 優秀</span></th>
+            <th><span class="level-badge b3">3 良</span></th>
+            <th><span class="level-badge b2">2 可</span></th>
+            <th><span class="level-badge b1">1 不可</span></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>表示方式の違い</td>
+            <td class="level-4">Head-up/North-up/Course-upの違いと適した状況を全て正確に述べられる</td>
+            <td class="level-3">2つを正確に比較できる</td>
+            <td class="level-2">1つを正確に説明できる</td>
+            <td class="level-1">説明できない</td>
+          </tr>
+          <tr>
+            <td>相対/真運動表示</td>
+            <td class="level-4">両表示の軌跡の意味とCPA判断への活用を正確に述べられる</td>
+            <td class="level-3">両表示の基本的な違いを正確に述べられる</td>
+            <td class="level-2">どちらか一方のみ正確に説明できる</td>
+            <td class="level-1">説明できない</td>
+          </tr>
+          <tr>
+            <td>VRM・EBL活用</td>
+            <td class="level-4">測位・避険線設定でのVRM/EBL活用手順を具体的に説明できる</td>
+            <td class="level-3">VRM・EBLの用途を正確に説明できる</td>
+            <td class="level-2">どちらか一方の用途を説明できる</td>
+            <td class="level-1">説明できない</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 確認テスト -->
+  <section class="content-section test-section">
+    <h2 class="section-title"><span class="icon">問</span>確認テスト</h2>
+    <p style="margin-bottom:1.2rem; font-size:0.9rem; color:var(--text-light);">※ 解答欄には記入不要です。口頭または記述で回答してください。</p>
+
+    <div class="test-question">
+      <div class="q-header">
+        <span class="q-num">問題 1</span>
+        <span class="q-level g3">3級</span>
+        <span class="q-type">択一式</span>
+      </div>
+      <p>北上方表示（North-up）の特徴として正しいものはどれか。</p>
+      <ul class="choices">
+        <li>ア．自船の針路が常に画面上方に表示される</li>
+        <li>イ．真北が常に画面上方に表示される</li>
+        <li>ウ．画面の向きが自動的に変化しない</li>
+        <li>エ．海図との対応には不向きである</li>
+      </ul>
+    </div>
+
+    <div class="test-question">
+      <div class="q-header">
+        <span class="q-num">問題 2</span>
+        <span class="q-level g3">3級</span>
+        <span class="q-type">記述式</span>
+      </div>
+      <p>VRM（可変距離マーカー）とEBL（電子方位線）のそれぞれの用途を説明しなさい。</p>
+    </div>
+
+    <div class="test-question">
+      <div class="q-header">
+        <span class="q-num">問題 3</span>
+        <span class="q-level g2">2級</span>
+        <span class="q-type">記述式</span>
+      </div>
+      <p>狭い水道を前方監視しながら航行する場面で、どの表示モードが最適か理由とともに述べなさい。</p>
+    </div>
+
+    <div class="test-question">
+      <div class="q-header">
+        <span class="q-num">問題 4</span>
+        <span class="q-level g2">2級</span>
+        <span class="q-type">記述式</span>
+      </div>
+      <p>相対運動表示と真運動表示について、衝突予防の観点からそれぞれの利点を説明しなさい。</p>
+    </div>
+  </section>
+
+</div>
+
+<footer>
+  <strong>広島商船高等専門学校</strong>　船舶レーダー教育課程<br>
+  第2回 / 全5回　|　2026年4月28日（火）<br>
+  <span class="next-session">次回（第3回）：2026年5月12日（火）— 操作・調整と偽像</span>
+</footer>
+
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  var scrollRaf=0;
+  function emitScroll(){
+    scrollRaf=0;
+    var x=window.scrollX||window.pageXOffset||0;
+    var y=window.scrollY||window.pageYOffset||0;
+    window.parent.postMessage({type:'INLINE_EDIT_SCROLL',scrollX:x,scrollY:y},'*');
+  }
+  window.addEventListener('scroll',function(){
+    if(scrollRaf)return;
+    scrollRaf=requestAnimationFrame(emitScroll);
+  },{passive:true,capture:true});
+  emitScroll();
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>

@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>第6回 ARPA / 自動衝突予防援助装置 | 船舶レーダー教育</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&family=Noto+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #1a3a5c;
+    --primary-dark: #0f2340;
+    --primary-light: #2a5080;
+    --accent: #e8a020;
+    --accent-light: #f5c060;
+    --bg: #f4f6f9;
+    --card-bg: #ffffff;
+    --text: #2c3e50;
+    --text-muted: #5a6a7a;
+    --grade3: #2e7d32;
+    --grade3-bg: #e8f5e9;
+    --grade2: #1565c0;
+    --grade2-bg: #e3f2fd;
+    --border: #d0dae6;
+    --shadow: 0 2px 12px rgba(26,58,92,0.10);
+    --shadow-lg: 0 8px 32px rgba(26,58,92,0.15);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Noto Sans JP', 'Noto Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ========== NAV ========== */
+  nav {
+    background: var(--primary-dark);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+  }
+  nav .nav-brand {
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    letter-spacing: 0.03em;
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+  }
+  nav .nav-brand svg { width: 28px; height: 28px; }
+  nav .nav-session {
+    background: var(--accent);
+    color: var(--primary-dark);
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.3rem 1rem;
+    border-radius: 20px;
+    letter-spacing: 0.05em;
+  }
+  nav .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+  }
+  nav .nav-links a {
+    color: rgba(255,255,255,0.75);
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+  }
+  nav .nav-links a:hover { color: var(--accent-light); }
+
+  /* ========== HEADER ========== */
+  .page-header {
+    background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 60%, #0a1828 100%);
+    color: #fff;
+    padding: 3.5rem 2rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .page-header::before {
+    content: '';
+    position: absolute;
+    right: -80px; top: -80px;
+    width: 400px; height: 400px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+    pointer-events: none;
+  }
+  .page-header::after {
+    content: '';
+    position: absolute;
+    right: 60px; bottom: -120px;
+    width: 300px; height: 300px;
+    border-radius: 50%;
+    background: rgba(232,160,32,0.08);
+    pointer-events: none;
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+  .header-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.2rem;
+    margin-bottom: 1.2rem;
+    align-items: center;
+  }
+  .badge {
+    display: inline-block;
+    padding: 0.2rem 0.85rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+  }
+  .badge-session { background: var(--accent); color: var(--primary-dark); }
+  .badge-date { background: rgba(255,255,255,0.15); color: rgba(255,255,255,0.9); }
+  .badge-module { background: rgba(255,255,255,0.10); color: rgba(255,255,255,0.75); border: 1px solid rgba(255,255,255,0.2); }
+  .page-header h1 {
+    font-size: clamp(1.6rem, 3.5vw, 2.4rem);
+    font-weight: 900;
+    line-height: 1.3;
+    margin-bottom: 0.8rem;
+    letter-spacing: -0.01em;
+  }
+  .page-header .subtitle {
+    font-size: 1rem;
+    color: rgba(255,255,255,0.75);
+    max-width: 700px;
+  }
+
+  /* ========== MAIN LAYOUT ========== */
+  main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem 4rem;
+  }
+
+  /* ========== SECTIONS ========== */
+  .section {
+    margin-bottom: 3rem;
+  }
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary);
+    padding-bottom: 0.6rem;
+    border-bottom: 3px solid var(--accent);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+  }
+  .section-title .icon {
+    width: 32px; height: 32px;
+    background: var(--primary);
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .section-title .icon svg { width: 18px; height: 18px; fill: #fff; }
+
+  /* ========== OBJECTIVE CARDS ========== */
+  .objective-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+  @media (max-width: 700px) { .objective-grid { grid-template-columns: 1fr; } }
+  .objective-card {
+    padding: 1.4rem 1.6rem;
+    border-radius: 10px;
+    border-left: 5px solid;
+    box-shadow: var(--shadow);
+  }
+  .objective-card.grade3 {
+    background: var(--grade3-bg);
+    border-color: var(--grade3);
+  }
+  .objective-card.grade2 {
+    background: var(--grade2-bg);
+    border-color: var(--grade2);
+  }
+  .objective-card .grade-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+  .objective-card.grade3 .grade-label { color: var(--grade3); }
+  .objective-card.grade2 .grade-label { color: var(--grade2); }
+  .objective-card p { font-size: 0.95rem; line-height: 1.65; }
+
+  /* ========== CONTENT CARDS ========== */
+  .card {
+    background: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 1.8rem 2rem;
+    margin-bottom: 1.5rem;
+  }
+  .card h3 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--primary);
+    margin-bottom: 0.8rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 2px solid var(--bg);
+    display: flex; align-items: center; gap: 0.5rem;
+  }
+  .card h3::before {
+    content: '';
+    display: inline-block;
+    width: 6px; height: 6px;
+    background: var(--accent);
+    border-radius: 50%;
+  }
+  .card ul, .card ol {
+    padding-left: 1.4rem;
+    margin-top: 0.5rem;
+  }
+  .card li {
+    margin-bottom: 0.4rem;
+    font-size: 0.93rem;
+  }
+  .card p {
+    font-size: 0.93rem;
+    margin-bottom: 0.6rem;
+  }
+
+  /* ========== INFO BOXES ========== */
+  .info-box {
+    background: linear-gradient(135deg, #e8f0fb, #d8e8fb);
+    border-left: 4px solid var(--primary-light);
+    padding: 1rem 1.3rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+  .warn-box {
+    background: #fff8e1;
+    border-left: 4px solid var(--accent);
+    padding: 1rem 1.3rem;
+    border-radius: 0 8px 8px 0;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+  }
+
+  /* ========== SVG FIGURES ========== */
+  .svg-figure {
+    background: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+  .svg-figure figcaption {
+    text-align: center;
+    font-size: 0.83rem;
+    color: var(--text-muted);
+    margin-top: 0.8rem;
+    font-weight: 500;
+  }
+  .svg-figure svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  /* ========== RUBRIC TABLE ========== */
+  .rubric-wrap {
+    overflow-x: auto;
+  }
+  .rubric-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    background: var(--card-bg);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .rubric-table thead tr {
+    background: var(--primary);
+    color: #fff;
+  }
+  .rubric-table thead th {
+    padding: 0.9rem 1rem;
+    text-align: center;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+  }
+  .rubric-table thead th:first-child { text-align: left; }
+  .rubric-table tbody tr:nth-child(even) { background: #f8fafc; }
+  .rubric-table tbody td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.55;
+  }
+  .rubric-table tbody td:first-child {
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 130px;
+  }
+  .score-4 { background: #e8f5e9 !important; }
+  .score-3 { background: #e3f2fd !important; }
+  .score-2 { background: #fff8e1 !important; }
+  .score-1 { background: #fce4ec !important; }
+  .score-badge {
+    display: inline-block;
+    width: 28px; height: 28px;
+    line-height: 28px;
+    border-radius: 50%;
+    text-align: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+  }
+  .badge-4 { background: #2e7d32; color: #fff; }
+  .badge-3 { background: #1565c0; color: #fff; }
+  .badge-2 { background: #f57f17; color: #fff; }
+  .badge-1 { background: #c62828; color: #fff; }
+
+  /* ========== QUIZ ========== */
+  .quiz-item {
+    background: var(--card-bg);
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    padding: 1.6rem 2rem;
+    margin-bottom: 1.2rem;
+    border-top: 4px solid var(--primary);
+  }
+  .quiz-item .quiz-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 0.8rem;
+  }
+  .quiz-num {
+    background: var(--primary);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.85rem;
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .quiz-grade {
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+  .quiz-grade.g3 { background: var(--grade3-bg); color: var(--grade3); }
+  .quiz-grade.g2 { background: var(--grade2-bg); color: var(--grade2); }
+  .quiz-type {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-weight: 600;
+    padding: 0.2rem 0.6rem;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+  .quiz-question {
+    font-size: 0.95rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    line-height: 1.65;
+  }
+  .quiz-choices {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .quiz-choices li {
+    background: #f8fafc;
+    border: 1px solid var(--border);
+    border-radius: 7px;
+    padding: 0.65rem 1rem;
+    font-size: 0.9rem;
+    cursor: default;
+    transition: background 0.15s;
+  }
+  .quiz-choices li:hover { background: #eef3fa; }
+  .quiz-essay {
+    background: #f8fafc;
+    border: 1.5px dashed var(--border);
+    border-radius: 7px;
+    padding: 1rem;
+    min-height: 80px;
+    font-size: 0.88rem;
+    color: var(--text-muted);
+    font-style: italic;
+  }
+
+  /* ========== FOOTER ========== */
+  footer {
+    background: var(--primary-dark);
+    color: rgba(255,255,255,0.75);
+    text-align: center;
+    padding: 2rem;
+    font-size: 0.83rem;
+    line-height: 1.8;
+  }
+  footer strong { color: #fff; }
+  footer .next-session {
+    display: inline-block;
+    margin-top: 0.8rem;
+    background: var(--accent);
+    color: var(--primary-dark);
+    font-weight: 700;
+    padding: 0.4rem 1.4rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    text-decoration: none;
+  }
+
+  /* ========== PRINT ========== */
+  @media print {
+    nav { display: none !important; }
+    body { background: #fff; font-size: 12pt; }
+    .page-header { background: var(--primary) !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .card, .svg-figure, .quiz-item { box-shadow: none; border: 1px solid #ddd; }
+    .section { page-break-inside: avoid; }
+    .quiz-item { page-break-inside: avoid; }
+    .rubric-table { page-break-inside: avoid; }
+    footer { page-break-before: always; }
+    @page { margin: 20mm; }
+    @page :first { counter-reset: page; }
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 768px) {
+    nav { padding: 0 1rem; }
+    main { padding: 1.5rem 1rem 3rem; }
+    .card { padding: 1.2rem; }
+    .quiz-item { padding: 1.2rem; }
+    .page-header { padding: 2.5rem 1rem 2rem; }
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.2rem;
+  }
+  @media (max-width: 700px) { .two-col { grid-template-columns: 1fr; } }
+
+  .highlight-row td:first-child { background: #f0f4fa; }
+</style>
+</head>
+<body>
+
+<!-- ========== NAV ========== -->
+<nav>
+  <div class="nav-brand">
+    <svg viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="14" cy="14" r="13" stroke="#e8a020" stroke-width="2"/>
+      <circle cx="14" cy="14" r="8" stroke="rgba(255,255,255,0.5)" stroke-width="1" stroke-dasharray="2 2"/>
+      <circle cx="14" cy="14" r="3" fill="#e8a020"/>
+      <line x1="14" y1="14" x2="22" y2="6" stroke="#e8a020" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="14" y1="1" x2="14" y2="4" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="14" y1="24" x2="14" y2="27" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="1" y1="14" x2="4" y2="14" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+      <line x1="24" y1="14" x2="27" y2="14" stroke="rgba(255,255,255,0.6)" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    船舶レーダー教育 | 広島商船高等専門学校
+  </div>
+  <ul class="nav-links">
+    <li><a href="#objectives">到達目標</a></li>
+    <li><a href="#content">学習内容</a></li>
+    <li><a href="#rubric">ルーブリック</a></li>
+    <li><a href="#quiz">確認テスト</a></li>
+  </ul>
+  <span class="nav-session">第6回</span>
+</nav>
+
+<!-- ========== HEADER ========== -->
+<header class="page-header">
+  <div class="header-inner">
+    <div class="header-meta">
+      <span class="badge badge-session">第6回 / 全10回</span>
+      <span class="badge badge-date">2026年6月2日（火）</span>
+      <span class="badge badge-module">モジュール 6：ARPA</span>
+    </div>
+    <h1>ARPA / 自動衝突予防援助装置</h1>
+    <p class="subtitle">ARPAのトラッキング原理・ベクタ表示・CPA/TCPAアラーム・誤差要因と固体化レーダーの影響について学ぶ</p>
+  </div>
+</header>
+
+<!-- ========== MAIN ========== -->
+<main>
+
+  <!-- 到達目標 -->
+  <section class="section" id="objectives">
+    <h2 class="section-title">
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/></svg></span>
+      到達目標
+    </h2>
+    <div class="objective-grid">
+      <div class="objective-card grade3">
+        <div class="grade-label">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#2e7d32" stroke-width="1.5"/><text x="8" y="12" text-anchor="middle" font-size="9" fill="#2e7d32" font-weight="bold" font-family="sans-serif">3</text></svg>
+          3級 航海士候補生
+        </div>
+        <p>ARPAの基本機能（自動トラッキング・CPA/TCPA算出・アラーム）と注意点を理解し、表示情報（真運動ベクタ・相対運動ベクタ・CPA点・TCPA）を正確に読み取れる。</p>
+      </div>
+      <div class="objective-card grade2">
+        <div class="grade-label">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="7" stroke="#1565c0" stroke-width="1.5"/><text x="8" y="12" text-anchor="middle" font-size="9" fill="#1565c0" font-weight="bold" font-family="sans-serif">2</text></svg>
+          2級 航海士候補生
+        </div>
+        <p>センサー故障や入力誤差（ジャイロ誤差・ログ誤差・GPS誤差）を踏まえ、ARPA情報の信頼性を評価するとともに、固体化レーダーの周波数安定性とARPAトラッキング精度の関係を含めた運用上の対処を説明できる。</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 学習コンテンツ -->
+  <section class="section" id="content">
+    <h2 class="section-title">
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg></span>
+      学習コンテンツ
+    </h2>
+
+    <!-- 1. ARPAの概要とトラッキング原理 -->
+    <div class="card">
+      <h3>1. ARPAの概要とトラッキング原理</h3>
+      <p>ARPA（Automatic Radar Plotting Aid）は、レーダーが捕捉したエコーを自動的に追跡し、他船の動静（速力・針路・CPA・TCPA等）を算出・表示するシステムである。SOLAS条約の改正により、一定の船舶への搭載が義務付けられている。</p>
+      <ul>
+        <li><strong>自動取得（Auto-Acquisition）</strong>：設定した距離範囲内に新たなエコーが現れると自動でトラッキングを開始する。手動取得も可能。</li>
+        <li><strong>トラッキング処理</strong>：アンテナ回転ごとに位置を更新し、統計的フィルタリング（カルマンフィルタ等）により雑音を除去しながら軌跡を推定する。</li>
+        <li><strong>運動ベクタの算出</strong>：複数スキャン分の位置変化から速力・針路を推定する。通常3〜5分の安定したトラッキングが必要。</li>
+      </ul>
+      <div class="info-box">
+        <strong>重要：</strong> トラッキング開始直後（数スキャン以内）のCPA/TCPA値は、まだ推定が収束していないため信頼性が低い。少なくとも3分以上の観測継続後に判断すること。
+      </div>
+    </div>
+
+    <!-- SVG図解①: ARPA画面模式図 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 440" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <!-- 背景 -->
+        <rect width="820" height="440" fill="#0a1828" rx="12"/>
+        <!-- レーダー画面 -->
+        <circle cx="330" cy="220" r="190" fill="#041020" stroke="#1a6040" stroke-width="1.5"/>
+        <!-- レンジリング -->
+        <circle cx="330" cy="220" r="50" fill="none" stroke="#0d4030" stroke-width="0.8" stroke-dasharray="3 3"/>
+        <circle cx="330" cy="220" r="100" fill="none" stroke="#0d4030" stroke-width="0.8" stroke-dasharray="3 3"/>
+        <circle cx="330" cy="220" r="150" fill="none" stroke="#0d4030" stroke-width="0.8" stroke-dasharray="3 3"/>
+        <!-- 方位線 -->
+        <line x1="330" y1="30" x2="330" y2="410" stroke="#0d4030" stroke-width="0.8" stroke-dasharray="3 3"/>
+        <line x1="140" y1="220" x2="520" y2="220" stroke="#0d4030" stroke-width="0.8" stroke-dasharray="3 3"/>
+        <!-- 自船（画面中心） -->
+        <polygon points="330,198 320,230 330,224 340,230" fill="#00e5a0" stroke="#00c880" stroke-width="1"/>
+        <text x="310" y="248" fill="#00e5a0" font-size="11" font-weight="bold">自船</text>
+        <!-- 他船A（上方） -->
+        <circle cx="330" cy="100" r="5" fill="#e87040" stroke="#ff9040" stroke-width="1.5"/>
+        <!-- 真運動ベクタA -->
+        <line x1="330" y1="100" x2="310" y2="58" stroke="#40b8ff" stroke-width="2" marker-end="url(#arrowBlue)"/>
+        <!-- 相対運動ベクタA -->
+        <line x1="330" y1="100" x2="340" y2="150" stroke="#ffdd40" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arrowYellow)"/>
+        <!-- CPA点A -->
+        <circle cx="340" cy="170" r="6" fill="none" stroke="#ff4444" stroke-width="2"/>
+        <text x="350" y="175" fill="#ff4444" font-size="10">CPA</text>
+        <!-- 他船B（右方） -->
+        <circle cx="450" cy="180" r="5" fill="#e87040" stroke="#ff9040" stroke-width="1.5"/>
+        <!-- 真運動ベクタB -->
+        <line x1="450" y1="180" x2="480" y2="148" stroke="#40b8ff" stroke-width="2" marker-end="url(#arrowBlue)"/>
+        <!-- 相対運動ベクタB -->
+        <line x1="450" y1="180" x2="408" y2="210" stroke="#ffdd40" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arrowYellow)"/>
+        <!-- 他船C（左下） -->
+        <circle cx="220" cy="310" r="5" fill="#e87040" stroke="#ff9040" stroke-width="1.5"/>
+        <!-- 真運動ベクタC -->
+        <line x1="220" y1="310" x2="200" y2="278" stroke="#40b8ff" stroke-width="2" marker-end="url(#arrowBlue)"/>
+        <!-- 相対運動ベクタC -->
+        <line x1="220" y1="310" x2="260" y2="330" stroke="#ffdd40" stroke-width="1.5" stroke-dasharray="5 3" marker-end="url(#arrowYellow)"/>
+
+        <!-- 矢印マーカー定義 -->
+        <defs>
+          <marker id="arrowBlue" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#40b8ff"/>
+          </marker>
+          <marker id="arrowYellow" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#ffdd40"/>
+          </marker>
+        </defs>
+
+        <!-- 情報パネル（右側） -->
+        <rect x="560" y="40" width="220" height="360" fill="#0d2035" stroke="#1a5080" stroke-width="1.5" rx="8"/>
+        <text x="670" y="68" fill="#e8a020" font-size="13" font-weight="bold" text-anchor="middle">ARPA 情報パネル</text>
+        <line x1="575" y1="78" x2="765" y2="78" stroke="#1a5080" stroke-width="1"/>
+
+        <!-- 船舶A情報 -->
+        <text x="578" y="100" fill="#ff9040" font-size="11" font-weight="bold">▶ 船舶 A</text>
+        <text x="578" y="120" fill="#8abadc" font-size="10">方位：000.5°</text>
+        <text x="578" y="136" fill="#8abadc" font-size="10">距離：6.0 NM</text>
+        <text x="578" y="152" fill="#8abadc" font-size="10">針路：185°  速力：12kt</text>
+        <text x="578" y="168" fill="#ff4444" font-size="11" font-weight="bold">CPA：0.3 NM</text>
+        <text x="578" y="184" fill="#ff4444" font-size="11" font-weight="bold">TCPA：18 min</text>
+        <rect x="572" y="188" width="200" height="2" fill="#1a5080" rx="1"/>
+
+        <!-- 船舶B情報 -->
+        <text x="578" y="208" fill="#ff9040" font-size="11" font-weight="bold">▶ 船舶 B</text>
+        <text x="578" y="228" fill="#8abadc" font-size="10">方位：060.2°</text>
+        <text x="578" y="244" fill="#8abadc" font-size="10">距離：7.2 NM</text>
+        <text x="578" y="260" fill="#8abadc" font-size="10">針路：240°  速力：8kt</text>
+        <text x="578" y="276" fill="#60cc60" font-size="11">CPA：1.8 NM</text>
+        <text x="578" y="292" fill="#60cc60" font-size="11">TCPA：32 min</text>
+        <rect x="572" y="296" width="200" height="2" fill="#1a5080" rx="1"/>
+
+        <!-- アラーム表示 -->
+        <rect x="572" y="308" width="200" height="60" fill="#3a1010" stroke="#ff4444" stroke-width="1.5" rx="5"/>
+        <text x="672" y="330" fill="#ff4444" font-size="11" font-weight="bold" text-anchor="middle">⚠ CPA/TCPA アラーム</text>
+        <text x="672" y="350" fill="#ff8080" font-size="10" text-anchor="middle">船舶A  CPA &lt; 0.5 NM</text>
+        <text x="672" y="366" fill="#ff8080" font-size="10" text-anchor="middle">TCPA &lt; 20 min</text>
+
+        <!-- 凡例 -->
+        <rect x="40" y="390" width="14" height="3" fill="#40b8ff" rx="1"/>
+        <text x="60" y="397" fill="#8abadc" font-size="10">真運動ベクタ</text>
+        <line x1="145" y1="393" x2="159" y2="393" stroke="#ffdd40" stroke-width="1.5" stroke-dasharray="4 2"/>
+        <text x="165" y="397" fill="#8abadc" font-size="10">相対運動ベクタ</text>
+        <circle cx="270" cy="393" r="4" fill="none" stroke="#ff4444" stroke-width="1.5"/>
+        <text x="280" y="397" fill="#8abadc" font-size="10">CPA点</text>
+        <circle cx="360" cy="393" r="4" fill="#e87040"/>
+        <text x="370" y="397" fill="#8abadc" font-size="10">他船</text>
+        <polygon points="430,389 424,401 430,396 436,401" fill="#00e5a0"/>
+        <text x="442" y="397" fill="#8abadc" font-size="10">自船</text>
+
+        <!-- タイトル -->
+        <text x="410" y="22" fill="#e8a020" font-size="14" font-weight="bold" text-anchor="middle">図1：ARPA画面の模式図</text>
+      </svg>
+      <figcaption>図1：ARPA画面の模式図 — 自船・他船・真運動ベクタ（青）・相対運動ベクタ（黄破線）・CPA点・TCPAの表示例</figcaption>
+    </figure>
+
+    <!-- 2. 入力データとARPAへの影響 -->
+    <div class="card">
+      <h3>2. 入力データとARPAへの影響</h3>
+      <p>ARPAは以下のセンサーデータを入力として使用する。各センサーの誤差はARPAの表示精度に直接影響する。</p>
+      <div class="two-col">
+        <div>
+          <strong style="color:var(--primary); display:block; margin-bottom:0.4rem;">主要入力センサー</strong>
+          <ul>
+            <li><strong>ジャイロコンパス</strong>：自船針路情報。真運動ベクタ計算の基準。</li>
+            <li><strong>スピードログ</strong>：自船速力情報。対水速力モードと対地速力モード。</li>
+            <li><strong>GPS</strong>：位置・対地速度・対地針路を提供。</li>
+            <li><strong>レーダー本体</strong>：エコー位置（方位・距離）。</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="color:var(--primary); display:block; margin-bottom:0.4rem;">誤差の連鎖</strong>
+          <ul>
+            <li>ジャイロ誤差 → 全他船のベクタ方向が一律にずれる</li>
+            <li>ログ誤差 → 自船速力不正確 → 相対/真運動ベクタの大きさに誤差</li>
+            <li>GPS誤差 → 対地モード使用時に全ベクタが変位</li>
+            <li>方位誤差・距離誤差 → エコー位置の系統誤差</li>
+          </ul>
+        </div>
+      </div>
+      <div class="warn-box">
+        <strong>注意：</strong> 対水速力モードでは潮流・海流の影響を受ける。特に強流域（黒潮付近等）では対地モードへの切替を検討すること。ただし対地モードでは他船の「真の対地運動」が表示されるため、避航判断に使用する場合は理解して運用すること。
+      </div>
+    </div>
+
+    <!-- 3. ベクタ表示 -->
+    <div class="card">
+      <h3>3. ベクタ表示 — 真運動ベクタと相対運動ベクタ</h3>
+      <div class="two-col">
+        <div>
+          <strong style="color:#1565c0; display:block; margin-bottom:0.5rem;">真運動ベクタ（True Vector）</strong>
+          <ul>
+            <li>各船の「海面に対する絶対的な動き」を示す</li>
+            <li>自船・他船ともに海底固定座標での針路・速力を表示</li>
+            <li><strong>活用：</strong>交通流の全体把握、船舶の意図把握</li>
+            <li>自船のベクタも画面上に表示される</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="color:#e65100; display:block; margin-bottom:0.5rem;">相対運動ベクタ（Relative Vector）</strong>
+          <ul>
+            <li>他船の「自船に対する相対的な動き」を示す</li>
+            <li>相対運動線がそのままCPA方向・距離を示す</li>
+            <li><strong>活用：</strong>衝突の危険判断・CPAの即座の把握</li>
+            <li>自船のベクタは画面上に表示されない（ゼロ）</li>
+          </ul>
+        </div>
+      </div>
+      <div class="info-box">
+        <strong>ポイント：</strong> 相対運動ベクタの先端が画面中心（自船位置）に向かっている場合、衝突の危険がある。ベクタ長は設定した時間（例：6分・12分）に対応する予測移動量を示す。
+      </div>
+    </div>
+
+    <!-- SVG図解②: センサー誤差の連鎖 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 320" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="320" fill="#f0f4fa" rx="12"/>
+        <text x="410" y="30" fill="#1a3a5c" font-size="14" font-weight="bold" text-anchor="middle">図2：センサー誤差がARPA表示に与える影響の連鎖</text>
+
+        <!-- ジャイロ誤差ブロック -->
+        <rect x="30" y="60" width="150" height="70" fill="#1a3a5c" rx="8"/>
+        <text x="105" y="90" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">ジャイロ誤差</text>
+        <text x="105" y="110" fill="#e8a020" font-size="10" text-anchor="middle">例：+2° の系統誤差</text>
+        <text x="105" y="125" fill="rgba(255,255,255,0.7)" font-size="9.5" text-anchor="middle">Gyro Compass Error</text>
+
+        <!-- 矢印1 -->
+        <line x1="180" y1="95" x2="230" y2="95" stroke="#e8a020" stroke-width="2.5" marker-end="url(#arrowOrange)"/>
+
+        <!-- 針路誤差ブロック -->
+        <rect x="230" y="60" width="150" height="70" fill="#c0392b" rx="8"/>
+        <text x="305" y="90" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">自船針路誤差</text>
+        <text x="305" y="110" fill="#ffcccc" font-size="10" text-anchor="middle">全ベクタが同方向にずれ</text>
+        <text x="305" y="125" fill="rgba(255,255,255,0.7)" font-size="9.5" text-anchor="middle">Course Error</text>
+
+        <!-- 矢印2 -->
+        <line x1="380" y1="95" x2="430" y2="95" stroke="#e8a020" stroke-width="2.5" marker-end="url(#arrowOrange)"/>
+
+        <!-- ARPA誤差ブロック -->
+        <rect x="430" y="60" width="150" height="70" fill="#8e44ad" rx="8"/>
+        <text x="505" y="90" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">ARPAベクタ誤差</text>
+        <text x="505" y="110" fill="#e8ccff" font-size="10" text-anchor="middle">他船針路・速力の誤算出</text>
+        <text x="505" y="125" fill="rgba(255,255,255,0.7)" font-size="9.5" text-anchor="middle">ARPA Vector Error</text>
+
+        <!-- 矢印3 -->
+        <line x1="580" y1="95" x2="630" y2="95" stroke="#e8a020" stroke-width="2.5" marker-end="url(#arrowOrange)"/>
+
+        <!-- 最終影響ブロック -->
+        <rect x="630" y="60" width="155" height="70" fill="#c0392b" rx="8"/>
+        <text x="707" y="85" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">CPA/TCPA誤算出</text>
+        <text x="707" y="104" fill="#ffcccc" font-size="10" text-anchor="middle">衝突危険度の誤評価</text>
+        <text x="707" y="120" fill="rgba(255,255,255,0.7)" font-size="9.5" text-anchor="middle">→ 不適切な避航判断のリスク</text>
+
+        <!-- ログ誤差ブロック -->
+        <rect x="30" y="175" width="150" height="70" fill="#1a3a5c" rx="8"/>
+        <text x="105" y="205" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">ログ誤差</text>
+        <text x="105" y="225" fill="#e8a020" font-size="10" text-anchor="middle">対水速力 vs 対地速力</text>
+        <text x="105" y="240" fill="rgba(255,255,255,0.7)" font-size="9.5" text-anchor="middle">Speed Log Error</text>
+
+        <!-- 矢印4（ログ→速力誤差） -->
+        <line x1="180" y1="210" x2="230" y2="210" stroke="#e8a020" stroke-width="2.5" marker-end="url(#arrowOrange)"/>
+
+        <!-- 速力誤差ブロック -->
+        <rect x="230" y="175" width="150" height="70" fill="#d35400" rx="8"/>
+        <text x="305" y="205" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">自船速力誤差</text>
+        <text x="305" y="225" fill="#ffddcc" font-size="10" text-anchor="middle">ベクタの大きさが不正確</text>
+        <text x="305" y="240" fill="rgba(255,255,255,0.7)" font-size="9.5" text-anchor="middle">Speed Error</text>
+
+        <!-- 矢印5 -->
+        <line x1="380" y1="210" x2="430" y2="210" stroke="#e8a020" stroke-width="2.5" marker-end="url(#arrowOrange)"/>
+
+        <!-- ARPAへの影響 -->
+        <rect x="430" y="175" width="350" height="70" fill="#27ae60" rx="8"/>
+        <text x="605" y="200" fill="#fff" font-size="12" font-weight="bold" text-anchor="middle">ARPA 真運動ベクタの長さ誤差</text>
+        <text x="605" y="220" fill="#ccffdd" font-size="10" text-anchor="middle">他船の速力・TCPA値が不正確になる</text>
+        <text x="605" y="236" fill="rgba(255,255,255,0.7)" font-size="9.5" text-anchor="middle">→ 潮流域では対地モード切替を検討</text>
+
+        <!-- 対処欄 -->
+        <rect x="30" y="265" width="755" height="40" fill="#1a3a5c" rx="8" opacity="0.12"/>
+        <text x="410" y="283" fill="#1a3a5c" font-size="11.5" font-weight="bold" text-anchor="middle">▶ 対処：センサー入力の定期確認 ／ ジャイロ誤差は毎日記録 ／ ARPA情報は生の観測と併用する</text>
+        <text x="410" y="299" fill="#1a3a5c" font-size="10.5" text-anchor="middle">ARPA displays shall be used only in conjunction with visual watch and direct radar observation.</text>
+
+        <defs>
+          <marker id="arrowOrange" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#e8a020"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>図2：センサー誤差がARPA表示に与える影響の連鎖 — ジャイロ誤差・ログ誤差それぞれの経路</figcaption>
+    </figure>
+
+    <!-- 4. CPA/TCPAアラーム -->
+    <div class="card">
+      <h3>4. CPA/TCPAアラームの設定と意味</h3>
+      <ul>
+        <li><strong>CPA（Closest Point of Approach）</strong>：現在の運動が続いた場合の最接近距離</li>
+        <li><strong>TCPA（Time to CPA）</strong>：最接近までの残り時間</li>
+        <li><strong>アラーム設定</strong>：通常、航海士が海域・視界・交通量に応じてCPA閾値（例：1.0 NM）とTCPA閾値（例：20分）を設定する</li>
+        <li><strong>アラーム発報時の初動</strong>：①表示確認→②相手船の動静観測（目視・レーダー）→③COLREGsに基づく状況判断→④必要に応じて避航動作</li>
+      </ul>
+      <div class="warn-box">
+        <strong>落とし穴：</strong> ARPAのアラームはあくまで注意喚起であり、直ちに操船変更を意味しない。アラームが鳴っても相手船が避航する場合があるため、まず状況を確認することが最優先である。
+      </div>
+    </div>
+
+    <!-- 5. ARPA限界・誤差要因 -->
+    <div class="card">
+      <h3>5. ARPA限界・誤差要因</h3>
+      <div class="two-col">
+        <div>
+          <strong style="color:var(--primary); display:block; margin-bottom:0.4rem;">センサー誤差</strong>
+          <ul>
+            <li>ジャイロ誤差：全ベクタが系統的にずれる</li>
+            <li>スピードログ誤差：速力推定が不正確</li>
+            <li>方位誤差：方位分解能の限界（0.1°程度）</li>
+            <li>距離誤差：パルス長・帯域幅による制限</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="color:var(--primary); display:block; margin-bottom:0.4rem;">トラッキング誤差</strong>
+          <ul>
+            <li>スワップ（Swap）：似た位置の2つのエコーを取り違える</li>
+            <li>ロスト（Lost）：クラッターや遮蔽によりエコーを見失う</li>
+            <li>初期収束誤差：取得直後の推定精度が低い</li>
+            <li>機動後の遅延：相手船が変針・変速後に追従遅延が生じる</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- SVG図解③: トラッキング誤差の模式図 -->
+    <figure class="svg-figure">
+      <svg viewBox="0 0 820 360" xmlns="http://www.w3.org/2000/svg" font-family="'Noto Sans JP', sans-serif">
+        <rect width="820" height="360" fill="#f0f4fa" rx="12"/>
+        <text x="410" y="30" fill="#1a3a5c" font-size="14" font-weight="bold" text-anchor="middle">図3：トラッキング誤差の模式図（正常 vs 誤トラッキング）</text>
+
+        <!-- 左パネル：正常トラッキング -->
+        <rect x="20" y="50" width="375" height="290" fill="#fff" stroke="#2e7d32" stroke-width="2" rx="10"/>
+        <rect x="20" y="50" width="375" height="36" fill="#2e7d32" rx="10 10 0 0"/>
+        <text x="207" y="74" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle">✓ 正常トラッキング</text>
+
+        <!-- 正常：画面背景 -->
+        <rect x="30" y="96" width="355" height="234" fill="#0a1828" rx="6"/>
+        <circle cx="207" cy="213" r="100" fill="none" stroke="#0d4030" stroke-width="0.8"/>
+        <circle cx="207" cy="213" r="50" fill="none" stroke="#0d4030" stroke-width="0.8"/>
+
+        <!-- 正常：軌跡点 -->
+        <circle cx="207" cy="120" r="4" fill="#40b8ff"/>
+        <circle cx="205" cy="135" r="4" fill="#40b8ff"/>
+        <circle cx="204" cy="150" r="4" fill="#40b8ff"/>
+        <circle cx="204" cy="165" r="4" fill="#40b8ff"/>
+        <circle cx="205" cy="180" r="4" fill="#40b8ff"/>
+        <!-- 軌跡線 -->
+        <polyline points="207,120 205,135 204,150 204,165 205,180" fill="none" stroke="#40b8ff" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <!-- 現在位置 -->
+        <circle cx="205" cy="180" r="7" fill="#e87040" stroke="#ff9040" stroke-width="2"/>
+        <!-- 真運動ベクタ -->
+        <line x1="205" y1="180" x2="200" y2="148" stroke="#40b8ff" stroke-width="2.5" marker-end="url(#arrowBlue2)"/>
+        <!-- 相対運動ベクタ -->
+        <line x1="205" y1="180" x2="215" y2="250" stroke="#ffdd40" stroke-width="2" stroke-dasharray="5 3" marker-end="url(#arrowYellow2)"/>
+
+        <text x="130" y="305" fill="#40b8ff" font-size="10">平滑な軌跡</text>
+        <text x="130" y="320" fill="#60cc60" font-size="10">安定したCPA/TCPA算出</text>
+        <text x="130" y="335" fill="rgba(255,255,255,0.5)" font-size="9">（3〜5分以上の観測後）</text>
+
+        <!-- 右パネル：誤トラッキング -->
+        <rect x="425" y="50" width="375" height="290" fill="#fff" stroke="#c62828" stroke-width="2" rx="10"/>
+        <rect x="425" y="50" width="375" height="36" fill="#c62828" rx="10 10 0 0"/>
+        <text x="612" y="74" fill="#fff" font-size="13" font-weight="bold" text-anchor="middle">✗ 誤トラッキング（スワップ）</text>
+
+        <!-- 誤トラッキング：画面背景 -->
+        <rect x="435" y="96" width="355" height="234" fill="#0a1828" rx="6"/>
+        <circle cx="612" cy="213" r="100" fill="none" stroke="#0d4030" stroke-width="0.8"/>
+        <circle cx="612" cy="213" r="50" fill="none" stroke="#0d4030" stroke-width="0.8"/>
+
+        <!-- 船Aの正しい軌跡 -->
+        <circle cx="612" cy="120" r="4" fill="#40b8ff" opacity="0.5"/>
+        <circle cx="610" cy="135" r="4" fill="#40b8ff" opacity="0.5"/>
+        <circle cx="610" cy="150" r="4" fill="#40b8ff" opacity="0.5"/>
+
+        <!-- 船Bの軌跡（近くを通過） -->
+        <circle cx="618" cy="148" r="4" fill="#40ff80" opacity="0.5"/>
+        <circle cx="620" cy="163" r="4" fill="#40ff80" opacity="0.5"/>
+
+        <!-- スワップ後：誤った軌跡（急激に変化） -->
+        <circle cx="622" cy="178" r="4" fill="#ff4444"/>
+        <circle cx="636" cy="190" r="4" fill="#ff4444"/>
+        <polyline points="610,150 622,178 636,190" fill="none" stroke="#ff4444" stroke-width="1.5" stroke-dasharray="3 2"/>
+
+        <!-- 混乱矢印 -->
+        <path d="M 610,150 Q 620,165 622,178" fill="none" stroke="#ff8800" stroke-width="2" stroke-dasharray="4 2"/>
+
+        <!-- 現在位置（スワップ後） -->
+        <circle cx="636" cy="190" r="7" fill="#e87040" stroke="#ff4444" stroke-width="2"/>
+        <!-- 誤ったベクタ（斜め方向へ跳んでいる） -->
+        <line x1="636" y1="190" x2="665" y2="165" stroke="#ff4444" stroke-width="2.5" stroke-dasharray="4 2" marker-end="url(#arrowRed)"/>
+
+        <!-- スワップ説明 -->
+        <text x="455" y="305" fill="#ff8080" font-size="10">スワップ：他船Bに乗り換え</text>
+        <text x="455" y="320" fill="#ff4444" font-size="10">→ ベクタが突然変化</text>
+        <text x="455" y="335" fill="rgba(255,255,255,0.5)" font-size="9">（CPA/TCPAが突然大きく変わる）</text>
+
+        <!-- 注意ラベル -->
+        <rect x="510" y="245" width="250" height="30" fill="#3a0505" stroke="#ff4444" stroke-width="1" rx="4"/>
+        <text x="635" y="265" fill="#ff8080" font-size="10" text-anchor="middle">⚠ ARPA数値が急変したら要注意</text>
+
+        <defs>
+          <marker id="arrowBlue2" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#40b8ff"/>
+          </marker>
+          <marker id="arrowYellow2" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#ffdd40"/>
+          </marker>
+          <marker id="arrowRed" markerWidth="8" markerHeight="6" refX="6" refY="3" orient="auto">
+            <polygon points="0 0, 8 3, 0 6" fill="#ff4444"/>
+          </marker>
+        </defs>
+      </svg>
+      <figcaption>図3：トラッキング誤差の模式図 — 正常トラッキング（左）とスワップによる誤トラッキング（右）の比較</figcaption>
+    </figure>
+
+    <!-- 6. 固体化レーダーとARPA精度 -->
+    <div class="card">
+      <h3>6. 固体化（半導体）レーダーの送信周波数安定性とARPAトラッキング精度</h3>
+      <p>固体化レーダー（Solid-State Radar）は半導体パワーアンプを使用し、マグネトロン方式と比較して送信周波数が非常に安定している。この特性はARPAトラッキング精度に以下の利点をもたらす。</p>
+      <div class="two-col">
+        <div>
+          <strong style="color:var(--primary); display:block; margin-bottom:0.4rem;">マグネトロンの特性</strong>
+          <ul>
+            <li>発振周波数が温度・経年劣化により変動する</li>
+            <li>パルスごとに周波数が微小変動する</li>
+            <li>高ピーク電力・短パルス</li>
+            <li>周波数変動が受信フィルターの効率低下を引き起こす</li>
+          </ul>
+        </div>
+        <div>
+          <strong style="color:var(--primary); display:block; margin-bottom:0.4rem;">固体化（半導体）の特性</strong>
+          <ul>
+            <li>送信周波数が安定：スキャン間でのコヒーレント処理が可能</li>
+            <li>FMCW（周波数変調連続波）またはパルス圧縮方式を採用</li>
+            <li>低ピーク電力・長パルスを圧縮して高距離分解能を実現</li>
+            <li>スキャン間の相関が高く、近距離小型物標の安定した追跡が可能</li>
+          </ul>
+        </div>
+      </div>
+      <div class="info-box">
+        <strong>ARPAへの影響：</strong> 固体化レーダーでは周波数安定性が高いため、スキャン間での同一エコーの識別が容易になり、近距離での小型船舶のトラッキング精度が向上する。一方でマグネトロンは周波数変動によりスキャン間相関が低下するため、小型・遅速の物標追跡に不利な場合がある。
+      </div>
+    </div>
+
+  </section>
+
+  <!-- ルーブリック -->
+  <section class="section" id="rubric">
+    <h2 class="section-title">
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zM5 3H3v18l2-2 2 2 2-2 2 2 2-2 2 2 2-2 2 2V3H5zm12 14H7V5h10v12z"/></svg></span>
+      評価ルーブリック（4段階）
+    </h2>
+    <div class="rubric-wrap">
+      <table class="rubric-table">
+        <thead>
+          <tr>
+            <th>評価観点</th>
+            <th><span class="score-badge badge-4">4</span><br>優秀</th>
+            <th><span class="score-badge badge-3">3</span><br>良</th>
+            <th><span class="score-badge badge-2">2</span><br>可</th>
+            <th><span class="score-badge badge-1">1</span><br>不可</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>ARPAの<br>基本機能</td>
+            <td class="score-4">自動トラッキング・CPA/TCPA算出・アラームの3機能を正確に説明できる</td>
+            <td class="score-3">2機能を正確に説明できる</td>
+            <td class="score-2">1機能を正確に説明できる</td>
+            <td class="score-1">説明できない</td>
+          </tr>
+          <tr>
+            <td>ベクタ表示<br>の理解</td>
+            <td class="score-4">真運動ベクタと相対運動ベクタの違いと活用場面を正確に述べられる</td>
+            <td class="score-3">両者の基本的な違いを述べられる</td>
+            <td class="score-2">どちらか一方のみ説明できる</td>
+            <td class="score-1">説明できない</td>
+          </tr>
+          <tr>
+            <td>誤差要因<br>の理解</td>
+            <td class="score-4">センサー誤差・トラッキング誤差の両方を具体的に説明し、対処を述べられる</td>
+            <td class="score-3">どちらか一方を具体的に説明できる</td>
+            <td class="score-2">誤差が存在することは理解している</td>
+            <td class="score-1">理解が不十分</td>
+          </tr>
+          <tr>
+            <td>固体化レーダー<br>とARPA精度</td>
+            <td class="score-4">送信周波数安定性とARPAトラッキング精度の関係を説明できる</td>
+            <td class="score-3">固体化の利点をARPAとの関連で述べられる</td>
+            <td class="score-2">概念的理解にとどまる</td>
+            <td class="score-1">理解が不十分</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- 確認テスト -->
+  <section class="section" id="quiz">
+    <h2 class="section-title">
+      <span class="icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/></svg></span>
+      確認テスト（解答なし）
+    </h2>
+
+    <div class="quiz-item">
+      <div class="quiz-header">
+        <span class="quiz-num">問題 1</span>
+        <span class="quiz-grade g3">3級</span>
+        <span class="quiz-type">択一式</span>
+      </div>
+      <p class="quiz-question">ARPAのCPA/TCPAアラームが鳴った際の最初の対応として最も適切なものはどれか。</p>
+      <ul class="quiz-choices">
+        <li>ア．直ちに針路を大きく変更する</li>
+        <li>イ．アラームを確認し、当該船の動静をレーダーで観測する</li>
+        <li>ウ．機関を直ちに後進にかける</li>
+        <li>エ．アラームを消して通常当直を継続する</li>
+      </ul>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-header">
+        <span class="quiz-num">問題 2</span>
+        <span class="quiz-grade g3">3級</span>
+        <span class="quiz-type">記述式</span>
+      </div>
+      <p class="quiz-question">ARPAの基本機能を3つ挙げ、それぞれ簡潔に説明しなさい。</p>
+      <div class="quiz-essay">（解答欄）</div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-header">
+        <span class="quiz-num">問題 3</span>
+        <span class="quiz-grade g2">2級</span>
+        <span class="quiz-type">記述式</span>
+      </div>
+      <p class="quiz-question">ジャイロコンパスに誤差が生じた場合、ARPAの表示にどのような影響があるか説明しなさい。</p>
+      <div class="quiz-essay">（解答欄）</div>
+    </div>
+
+    <div class="quiz-item">
+      <div class="quiz-header">
+        <span class="quiz-num">問題 4</span>
+        <span class="quiz-grade g2">2級</span>
+        <span class="quiz-type">記述式</span>
+      </div>
+      <p class="quiz-question">ARPAのトラッキング開始直後にCPA/TCPA表示を参照することの問題点と、適切な運用方法を説明しなさい。</p>
+      <div class="quiz-essay">（解答欄）</div>
+    </div>
+
+  </section>
+
+</main>
+
+<!-- ========== FOOTER ========== -->
+<footer>
+  <strong>広島商船高等専門学校</strong><br>
+  船舶レーダー教育カリキュラム ｜ 第6回 / 全10回<br>
+  対象：3級・2級航海士候補生（高専・海技大学）<br>
+  <a class="next-session" href="session07.html">▶ 次回：第7回 視界制限状態でのレーダー運用（2026年6月9日）</a>
+</footer>
+
+<script data-pplx-inline-edit>
+(function(){
+  if(window===window.top)return;
+  function inlineAll(orig,clone){
+    if(orig.nodeType!==1)return;
+    try{
+      var cs=getComputedStyle(orig);
+      var t='';
+      for(var i=0;i<cs.length;i++){t+=cs[i]+':'+cs.getPropertyValue(cs[i])+';';}
+      clone.style.cssText=t;
+    }catch(e){}
+    var oc=orig.children,cc=clone.children;
+    for(var j=0;j<oc.length&&j<cc.length;j++){inlineAll(oc[j],cc[j]);}
+  }
+  function stripExternal(clone){
+    var imgs=clone.querySelectorAll('img');
+    for(var i=0;i<imgs.length;i++){
+      var s=imgs[i].getAttribute('src');
+      if(s&&!s.startsWith('data:'))imgs[i].removeAttribute('src');
+    }
+    var all=clone.querySelectorAll('*');
+    for(var i=0;i<all.length;i++){
+      var st=all[i].style.cssText;
+      if(st&&st.indexOf('url(')>=0){
+        all[i].style.cssText=st.replace(/url\(["']?(?!data:)[^)"']*["']?\)/gi,'none');
+      }
+    }
+  }
+  var scrollRaf=0;
+  function emitScroll(){
+    scrollRaf=0;
+    var x=window.scrollX||window.pageXOffset||0;
+    var y=window.scrollY||window.pageYOffset||0;
+    window.parent.postMessage({type:'INLINE_EDIT_SCROLL',scrollX:x,scrollY:y},'*');
+  }
+  window.addEventListener('scroll',function(){
+    if(scrollRaf)return;
+    scrollRaf=requestAnimationFrame(emitScroll);
+  },{passive:true,capture:true});
+  emitScroll();
+  window.addEventListener('message',function(e){
+    if(!e.data||e.data.type!=='INLINE_EDIT_CAPTURE_REQUEST')return;
+    var scrollX=window.scrollX||window.pageXOffset||0;
+    var scrollY=window.scrollY||window.pageYOffset||0;
+    var w=window.innerWidth,h=window.innerHeight;
+    try{
+      var clone=document.documentElement.cloneNode(true);
+      var rm=clone.querySelectorAll('script,link[rel="stylesheet"],style');
+      for(var i=0;i<rm.length;i++){rm[i].remove();}
+      inlineAll(document.documentElement,clone);
+      stripExternal(clone);
+      var html=new XMLSerializer().serializeToString(clone);
+      var svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'">'
+        +'<foreignObject width="100%" height="100%">'
+        +'<div xmlns="http://www.w3.org/1999/xhtml" style="width:'+w+'px;height:'+h+'px;overflow:hidden">'
+        +'<div style="transform:translate(-'+scrollX+'px,-'+scrollY+'px);transform-origin:top left">'
+        +html+'</div></div></foreignObject></svg>';
+      var svgUrl='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(svg);
+      var img=new Image();
+      img.onload=function(){
+        var c=document.createElement('canvas');c.width=w;c.height=h;
+        c.getContext('2d').drawImage(img,0,0);
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:c.toDataURL('image/png'),scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.onerror=function(){
+        window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+      };
+      img.src=svgUrl;
+    }catch(err){
+      window.parent.postMessage({type:'INLINE_EDIT_SCREENSHOT_RESULT',dataUrl:null,scrollX:scrollX,scrollY:scrollY},'*');
+    }
+  });
+})();
+</script></body>
+</html>
