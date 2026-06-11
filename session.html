@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Maritime GMDSS & Bridge English Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #0b1120;
+      color: #e5e7eb;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+    .container {
+      max-width: 900px;
+      width: 100%;
+      padding: 24px 16px 48px;
+    }
+    h1 {
+      font-size: 1.6rem;
+      margin-bottom: 0.5rem;
+      color: #f97316;
+    }
+    .subtitle {
+      font-size: 0.9rem;
+      color: #9ca3af;
+      margin-bottom: 1.5rem;
+    }
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .status-item {
+      font-size: 0.9rem;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #1f2937;
+      font-size: 0.8rem;
+      color: #e5e7eb;
+      border: 1px solid #374151;
+    }
+    .timer {
+      font-weight: bold;
+      color: #fbbf24;
+      font-size: 1.1rem;
+    }
+    .card {
+      background: #020617;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      padding: 16px 16px 20px;
+      box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+    }
+    .question-header {
+      font-size: 0.9rem;
+      color: #9ca3af;
+      margin-bottom: 0.4rem;
+    }
+    .question-text {
+      font-size: 1.05rem;
+      margin-bottom: 1rem;
+    }
+    .options {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 8px;
+    }
+    .option {
+      border-radius: 999px;
+      border: 1px solid #1f2937;
+      background: #020617;
+      padding: 8px 12px;
+      font-size: 0.95rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: background 0.15s, border-color 0.15s, transform 0.08s;
+    }
+    .option span.label {
+      margin-right: 12px;
+      font-weight: 600;
+      color: #9ca3af;
+      width: 18px;
+    }
+    .option span.text {
+      flex: 1;
+    }
+    .option:hover {
+      background: #111827;
+      border-color: #4b5563;
+      transform: translateY(-1px);
+    }
+    .option.correct {
+      background: #065f46;
+      border-color: #34d399;
+    }
+    .option.incorrect {
+      background: #7f1d1d;
+      border-color: #f87171;
+    }
+    .option.disabled {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    .controls {
+      margin-top: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    button {
+      border-radius: 999px;
+      border: none;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.15s, transform 0.08s, box-shadow 0.08s;
+    }
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+      transform: none;
+      box-shadow: none;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #f97316, #facc15);
+      color: #111827;
+      box-shadow: 0 8px 20px rgba(250, 204, 21, 0.3);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #fb923c, #fbbf24);
+      transform: translateY(-1px);
+      box-shadow: 0 12px 25px rgba(251, 191, 36, 0.4);
+    }
+    .btn-secondary {
+      background: #111827;
+      color: #e5e7eb;
+      border: 1px solid #374151;
+    }
+    .btn-secondary:hover:not(:disabled) {
+      background: #1f2937;
+      transform: translateY(-1px);
+    }
+    .results {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid #1f2937;
+      background: #020617;
+    }
+    .results h2 {
+      margin-top: 0;
+      margin-bottom: 0.4rem;
+      font-size: 1.2rem;
+    }
+    .results p {
+      margin: 2px 0;
+      font-size: 0.9rem;
+      color: #d1d5db;
+    }
+    .results .success {
+      color: #6ee7b7;
+    }
+    .results .failure {
+      color: #fca5a5;
+    }
+    .cipher {
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #0f172a;
+      border: 1px dashed #4b5563;
+      font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9rem;
+      color: #facc15;
+      word-break: break-all;
+    }
+    .footer {
+      margin-top: 20px;
+      font-size: 0.75rem;
+      color: #6b7280;
+      text-align: right;
+    }
+    @media (max-width: 640px) {
+      h1 {
+        font-size: 1.3rem;
+      }
+      .question-text {
+        font-size: 1rem;
+      }
+      .option {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>GMDSS & Bridge English Quiz</h1>
+    <div class="subtitle">
+      30秒以内に20問すべて正解できれば <strong>Congratulations!</strong>。失敗したら1問目からやり直し（問題順は毎回ランダム）。
+    </div>
+
+    <div class="status-bar">
+      <div class="status-item">
+        <span class="badge">Q: <span id="question-number">1</span> / <span id="question-total">20</span></span>
+      </div>
+      <div class="status-item">
+        <span class="badge">Score: <span id="score">0</span></span>
+      </div>
+      <div class="status-item">
+        <span class="badge">Time: <span id="time" class="timer">30</span>s</span>
+      </div>
+    </div>
+
+    <div class="card" id="quiz-card">
+      <div class="question-header">
+        Select the best answer:
+      </div>
+      <div class="question-text" id="question-text">
+        <!-- Question will be injected here -->
+      </div>
+      <ul class="options" id="options-list">
+        <!-- Options will be injected here -->
+      </ul>
+      <div class="controls">
+        <button class="btn-secondary" id="restart-btn" style="display:none;">Restart from Q1</button>
+        <button class="btn-primary" id="next-btn" disabled>Next</button>
+      </div>
+    </div>
+
+    <div class="results" id="results" style="display:none;">
+      <h2 id="result-title"></h2>
+      <p id="result-detail"></p>
+      <p id="result-timer"></p>
+      <div id="cipher-block" style="display:none;">
+        <p class="success">Mystery cipher unlocked:</p>
+        <div class="cipher" id="cipher-text">X7-SEA-OSC-2026</div>
+      </div>
+      <div style="margin-top:12px;">
+        <button class="btn-primary" id="retry-btn">Try Again from Q1</button>
+      </div>
+    </div>
+
+    <div class="footer">
+      Built for training GMDSS & SMCP style English.
+    </div>
+  </div>
+
+  <script>
+    // ===== Quiz data (20 questions, 4 options each) =====
+    const originalQuestions = [
+      {
+        q: "In a MAYDAY call, which word should be spoken first on VHF Ch.16?",
+        options: ["Distress", "Help", "MAYDAY", "SOS"],
+        correct: 2
+      },
+      {
+        q: "How many times is the word “MAYDAY” normally repeated at the start of a distress call?",
+        options: ["Once", "Twice", "Three times", "Four times"],
+        correct: 2
+      },
+      {
+        q: "Which of the following correctly begins a MAYDAY message?",
+        options: [
+          "MAYDAY, MAYDAY, MAYDAY",
+          "Help, help, help",
+          "Emergency, emergency, emergency",
+          "PAN PAN, PAN PAN, PAN PAN"
+        ],
+        correct: 0
+      },
+      {
+        q: "What is the correct priority order from highest to lowest?",
+        options: [
+          "SECURITE – PAN PAN – MAYDAY",
+          "PAN PAN – MAYDAY – SECURITE",
+          "MAYDAY – SECURITE – PAN PAN",
+          "MAYDAY – PAN PAN – SECURITE"
+        ],
+        correct: 3
+      },
+      {
+        q: "Which phrase is used for an urgency message such as serious engine breakdown?",
+        options: ["MAYDAY", "MAYDAY RELAY", "PAN PAN", "SECURITE"],
+        correct: 2
+      },
+      {
+        q: "Which word introduces a routine safety message like a navigation warning?",
+        options: ["MAYDAY", "SECURITE", "PAN PAN", "MAYDAY RELAY"],
+        correct: 1
+      },
+      {
+        q: "What does “MAYDAY RELAY” indicate?",
+        options: [
+          "Test call to coast station",
+          "Distress message on behalf of another vessel",
+          "Engine test for main engine",
+          "Cancellation of a distress alert"
+        ],
+        correct: 1
+      },
+      {
+        q: "Which is the correct VHF channel for routine distress, urgency, and safety calls at sea?",
+        options: ["Ch.06", "Ch.13", "Ch.16", "Ch.70 only"],
+        correct: 2
+      },
+      {
+        q: "Which phrase is suitable to begin a MEDICO medical advice request?",
+        options: [
+          "SECURITE, SECURITE, SECURITE",
+          "MAYDAY, MAYDAY, MAYDAY",
+          "Medical, medical, medical",
+          "PAN PAN, PAN PAN, PAN PAN, MEDICO"
+        ],
+        correct: 3
+      },
+      {
+        q: "In SAR, what does OSC stand for?",
+        options: [
+          "On Scene Controller",
+          "Onboard Safety Committee",
+          "Operational Support Center",
+          "Ocean Safety Control"
+        ],
+        correct: 0
+      },
+      {
+        q: "Which phrase is correct to order maximum speed from bridge to engine room?",
+        options: [
+          "Full ahead",
+          "Half more speed",
+          "Go fast please",
+          "Maximum RPM please"
+        ],
+        correct: 0
+      },
+      {
+        q: "Which phrase is appropriate for watch handover on the bridge?",
+        options: [
+          "I am tired, you take it.",
+          "The watch is yours.",
+          "You can go now.",
+          "I will go to sleep."
+        ],
+        correct: 1
+      },
+      {
+        q: "Which is the best phrase to cancel a distress situation when the vessel is no longer in danger?",
+        options: [
+          "MAYDAY CANCELED",
+          "MAYDAY OVER",
+          "MAYDAY FINISHED",
+          "MAYDAY SEELONCE FEENEE"
+        ],
+        correct: 3
+      },
+      {
+        q: "For a fire drill, which order correctly starts fire fighting?",
+        options: [
+          "Commence fire fighting.",
+          "Go water.",
+          "Start extinguish.",
+          "Begin fire."
+        ],
+        correct: 0
+      },
+      {
+        q: "Which phrase is suitable during abandon ship to tell crew to board the lifeboat?",
+        options: [
+          "All crew, go to the port door.",
+          "All crew, board the lifeboat.",
+          "Everybody jump to the sea.",
+          "All crew, stop working."
+        ],
+        correct: 1
+      },
+      {
+        q: "Which phrase is correct to confirm engine stop from bridge to engine room?",
+        options: [
+          "Engine no more.",
+          "Stop main.",
+          "Stop engine.",
+          "Finish engine."
+        ],
+        correct: 2
+      },
+      {
+        q: "Which phrase best describes a position report in SAR?",
+        options: [
+          "My position is latitude and longitude.",
+          "I am here now.",
+          "I am near the ship.",
+          "I am close to danger."
+        ],
+        correct: 0
+      },
+      {
+        q: "Which call sign-off phrase is appropriate after completing a safety (SECURITE) broadcast?",
+        options: [
+          "Out.",
+          "Finished.",
+          "I am done.",
+          "Clear channel."
+        ],
+        correct: 0
+      },
+      {
+        q: "Which phrase is most appropriate for cargo operation instruction?",
+        options: [
+          "Open hatch cover No.1.",
+          "Make hatch up.",
+          "Do open cover one.",
+          "Remove top door."
+        ],
+        correct: 0
+      },
+      {
+        q: "During SAR coordination, which phrase offers to act as OSC?",
+        options: [
+          "I can be OSC.",
+          "I am able to act as On Scene Coordinator.",
+          "I will do rescue boss.",
+          "I want control here."
+        ],
+        correct: 1
+      }
+    ];
+
+    // シャッフルされた問題リスト（実際に利用する配列）
+    let questions = [];
+
+    const TOTAL_TIME = 30; // 30 seconds for whole quiz
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let timer = TOTAL_TIME;
+    let timerId = null;
+    let quizFinished = false;
+
+    const questionNumberEl = document.getElementById("question-number");
+    const questionTotalEl = document.getElementById("question-total");
+    const scoreEl = document.getElementById("score");
+    const timeEl = document.getElementById("time");
+    const questionTextEl = document.getElementById("question-text");
+    const optionsListEl = document.getElementById("options-list");
+    const nextBtn = document.getElementById("next-btn");
+    const restartBtn = document.getElementById("restart-btn");
+    const resultsEl = document.getElementById("results");
+    const resultTitleEl = document.getElementById("result-title");
+    const resultDetailEl = document.getElementById("result-detail");
+    const resultTimerEl = document.getElementById("result-timer");
+    const cipherBlockEl = document.getElementById("cipher-block");
+    const cipherTextEl = document.getElementById("cipher-text");
+    const retryBtn = document.getElementById("retry-btn");
+    const quizCardEl = document.getElementById("quiz-card");
+
+    // ---- 配列シャッフル関数（Fisher–Yates）----
+    function shuffleArray(array) {
+      const a = array.slice(); // 元配列は壊さない
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function startTimer() {
+      if (timerId) clearInterval(timerId);
+      timer = TOTAL_TIME;
+      timeEl.textContent = timer.toString();
+      timeEl.style.color = "#fbbf24";
+      timerId = setInterval(() => {
+        timer--;
+        if (timer <= 10 && timer > 5) {
+          timeEl.style.color = "#f97316";
+        }
+        if (timer <= 5) {
+          timeEl.style.color = "#f87171";
+        }
+        timeEl.textContent = Math.max(timer, 0).toString();
+        if (timer <= 0) {
+          clearInterval(timerId);
+          endQuiz(false, true); // time up
+        }
+      }, 1000);
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQuestionIndex];
+      questionNumberEl.textContent = (currentQuestionIndex + 1).toString();
+      questionTotalEl.textContent = questions.length.toString();
+      questionTextEl.textContent = q.q;
+      optionsListEl.innerHTML = "";
+      nextBtn.disabled = true;
+      restartBtn.style.display = "none";
+
+      q.options.forEach((opt, index) => {
+        const li = document.createElement("li");
+        li.className = "option";
+        li.dataset.index = index.toString();
+        li.innerHTML = `
+          <span class="label">${String.fromCharCode(65 + index)}.</span>
+          <span class="text">${opt}</span>
+        `;
+        li.addEventListener("click", () => onOptionClick(li, index));
+        optionsListEl.appendChild(li);
+      });
+    }
+
+    function onOptionClick(element, index) {
+      if (quizFinished) return;
+
+      const q = questions[currentQuestionIndex];
+      const options = optionsListEl.querySelectorAll(".option");
+      options.forEach((opt) => {
+        opt.classList.add("disabled");
+      });
+
+      if (index === q.correct) {
+        element.classList.add("correct");
+        score++;
+        scoreEl.textContent = score.toString();
+      } else {
+        element.classList.add("incorrect");
+        options.forEach((opt) => {
+          const idx = parseInt(opt.dataset.index || "0", 10);
+          if (idx === q.correct) {
+            opt.classList.add("correct");
+          }
+        });
+      }
+
+      if (currentQuestionIndex === questions.length - 1) {
+        clearInterval(timerId);
+        const allCorrect = score === questions.length;
+        endQuiz(allCorrect, false);
+      } else {
+        nextBtn.disabled = false;
+      }
+    }
+
+    function endQuiz(allCorrect, timeUp) {
+      quizFinished = true;
+      quizCardEl.style.opacity = "0.4";
+      quizCardEl.style.pointerEvents = "none";
+      resultsEl.style.display = "block";
+      restartBtn.style.display = "inline-flex";
+
+      if (allCorrect && !timeUp) {
+        resultTitleEl.textContent = "Congratulations!";
+        resultTitleEl.className = "success";
+        resultDetailEl.textContent = "You answered all 20 questions correctly within the time limit.";
+        resultDetailEl.className = "success";
+        resultTimerEl.textContent = `Remaining time: ${timer} seconds`;
+        cipherBlockEl.style.display = "block";
+        // cipherTextEl.textContent = "X7-SEA-OSC-2026"; // 好きな暗号に変更可
+      } else {
+        resultTitleEl.textContent = timeUp ? "Time is up." : "Try again.";
+        resultTitleEl.className = "failure";
+        if (timeUp) {
+          resultDetailEl.textContent = "30 seconds have passed. You must restart from question 1.";
+        } else {
+          resultDetailEl.textContent = `You scored ${score} / ${questions.length}. You need 20 / 20 to pass.`;
+        }
+        resultDetailEl.className = "failure";
+        resultTimerEl.textContent = `Final time: ${Math.max(timer, 0)} seconds`;
+        cipherBlockEl.style.display = "none";
+      }
+    }
+
+    function resetQuiz() {
+      // 問題を毎回ランダム並びに
+      questions = shuffleArray(originalQuestions);
+
+      score = 0;
+      scoreEl.textContent = score.toString();
+      currentQuestionIndex = 0;
+      quizFinished = false;
+      quizCardEl.style.opacity = "1";
+      quizCardEl.style.pointerEvents = "auto";
+      resultsEl.style.display = "none";
+      renderQuestion();
+      startTimer();
+    }
+
+    nextBtn.addEventListener("click", () => {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+        renderQuestion();
+      }
+    });
+
+    restartBtn.addEventListener("click", resetQuiz);
+    retryBtn.addEventListener("click", resetQuiz);
+
+    // 初期起動時もランダム化してスタート
+    resetQuiz();
+  </script>
+</body>
+</html>
